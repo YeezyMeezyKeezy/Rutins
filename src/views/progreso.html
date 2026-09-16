@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rutins - Progreso</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/progreso.css" />
+  </head>
+  <body>
+    <div class="app-body">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <img
+            src="../../assets/icons/Rutins.png"
+            alt="Rutins"
+            class="sidebar-logo-img"
+          />
+          <div class="sidebar-name">Rutins</div>
+        </div>
+
+        <div class="sidebar-section">Principal</div>
+        <a class="nav-item" href="dashboard.html">
+          <span class="nav-icon" data-lucide="home"></span>
+          Dashboard
+        </a>
+        <a class="nav-item" href="rutinas.html">
+          <span class="nav-icon" data-lucide="clipboard-list"></span>
+          Mis Rutinas
+          <span class="nav-badge" id="routines-badge" style="display: none"
+            >0</span
+          >
+        </a>
+        <div class="nav-item active">
+          <span class="nav-icon" data-lucide="bar-chart-3"></span>
+          Progreso
+        </div>
+        <a class="nav-item" href="configuracion.html">
+          <span class="nav-icon" data-lucide="settings"></span>
+          Configuración
+        </a>
+
+        <div class="sidebar-footer">
+          <div
+            class="user-mini"
+            onclick="goToSettings()"
+            style="cursor: pointer"
+          >
+            <div class="user-avatar" id="user-avatar">J</div>
+            <div>
+              <div class="user-name" id="user-name">Juan P.</div>
+            </div>
+            <span class="user-menu-icon" data-lucide="ellipsis"></span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title">Tu progreso</div>
+          <div class="topbar-spacer"></div>
+          <div class="tabs">
+            <div
+              class="tab active"
+              data-period="weekly"
+              onclick="switchPeriod('weekly', this)"
+            >
+              Semanal
+            </div>
+            <div
+              class="tab"
+              data-period="monthly"
+              onclick="switchPeriod('monthly', this)"
+            >
+              Mensual
+            </div>
+          </div>
+        </div>
+
+        <div class="content">
+          <!-- Stats -->
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon-box red">
+                  <span data-lucide="circle-check"></span>
+                </div>
+              </div>
+              <div class="stat-value" id="stat-completed">0%</div>
+              <div class="stat-label">Rutinas completadas</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon-box green">
+                  <span data-lucide="target"></span>
+                </div>
+              </div>
+              <div class="stat-value" id="stat-consistency">0%</div>
+              <div class="stat-label">Consistencia</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon-box gold">
+                  <span data-lucide="flame"></span>
+                </div>
+              </div>
+              <div class="stat-value" id="stat-streak">0</div>
+              <div class="stat-label">Racha (días)</div>
+            </div>
+          </div>
+
+          <!-- Chart + Breakdown -->
+          <div class="two-col">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span data-lucide="trending-up"></span>
+                  Rendimiento en el tiempo
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart-container" id="week-chart"></div>
+                <div class="chart-note" id="chart-note">
+                  Completa rutinas para ver tu rendimiento.
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span data-lucide="clipboard-list"></span>
+                  Desglose detallado
+                </div>
+              </div>
+              <div class="card-body" id="breakdown-list">
+                <div class="empty-mini">Sin datos aún</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historial -->
+          <div class="section-label">Historial de ejecuciones</div>
+          <div class="card">
+            <div class="card-body" style="padding: 0">
+              <table class="executions-table">
+                <thead>
+                  <tr>
+                    <th>Rutina</th>
+                    <th>Fecha</th>
+                    <th>Tiempo</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="executions-tbody">
+                  <tr>
+                    <td colspan="4">
+                      <div class="empty-state">
+                        <div class="empty-icon">
+                          <span data-lucide="bar-chart-3"></span>
+                        </div>
+                        <div class="empty-title">Sin historial aún</div>
+                        <div class="empty-subtitle">
+                          Completa rutinas para ver tu historial
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/lucide.min.js"></script>
+    <script src="../renderer/progreso.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

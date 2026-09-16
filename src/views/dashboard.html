@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rutins - Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/dashboard.css" />
+  </head>
+  <body>
+    <div class="app-body">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <img
+            src="../../assets/icons/Rutins.png"
+            alt="Rutins"
+            class="sidebar-logo-img"
+          />
+          <div class="sidebar-name">Rutins</div>
+        </div>
+
+        <div class="sidebar-section">Principal</div>
+        <a class="nav-item active" href="dashboard.html">
+          <span class="nav-icon" data-lucide="home"></span>
+          Dashboard
+        </a>
+        <a class="nav-item" href="rutinas.html">
+          <span class="nav-icon" data-lucide="clipboard-list"></span>
+          Mis Rutinas
+          <span class="nav-badge" id="routines-badge" style="display: none"
+            >0</span
+          >
+        </a>
+        <a class="nav-item" href="progreso.html">
+          <span class="nav-icon" data-lucide="bar-chart-3"></span>
+          Progreso
+        </a>
+        <a class="nav-item" href="configuracion.html">
+          <span class="nav-icon" data-lucide="settings"></span>
+          Configuración
+        </a>
+
+        <div class="sidebar-footer">
+          <div
+            class="user-mini"
+            onclick="goToSettings()"
+            style="cursor: pointer"
+          >
+            <div class="user-avatar" id="user-avatar">J</div>
+            <div>
+              <div class="user-name" id="user-name">Juan P.</div>
+            </div>
+            <span class="user-menu-icon" data-lucide="ellipsis"></span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title">
+            <span id="topbar-title-text"></span>
+            <span class="title-icon" data-lucide="hand"></span>
+          </div>
+          <div class="topbar-spacer"></div>
+          <button class="topbar-btn" onclick="createRoutineModal()">
+            <span data-lucide="plus"></span>
+            Nueva Rutina
+          </button>
+        </div>
+
+        <div class="content">
+          <!-- DASHBOARD -->
+          <section class="section active" id="dashboard">
+            <div class="stats-row">
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon-box red">
+                    <span data-lucide="clipboard-list"></span>
+                  </div>
+                </div>
+                <div class="stat-value" id="stat-total">0</div>
+                <div class="stat-label">Total Rutinas</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon-box gold">
+                    <span data-lucide="flame"></span>
+                  </div>
+                </div>
+                <div class="stat-value" id="stat-streak">0</div>
+                <div class="stat-label">Racha (días)</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon-box green">
+                    <span data-lucide="circle-check"></span>
+                  </div>
+                </div>
+                <div class="stat-value" id="stat-week">0</div>
+                <div class="stat-label">Completadas esta semana</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon-box blue">
+                    <span data-lucide="calendar"></span>
+                  </div>
+                </div>
+                <div class="stat-value" id="stat-today">0</div>
+                <div class="stat-label">Rutinas de hoy</div>
+              </div>
+            </div>
+
+            <div class="today-banner">
+              <div class="today-text">
+                <h2 id="today-title">
+                  <span data-lucide="calendar" class="inline-icon"></span>
+                  <span id="today-title-text">Hoy</span>
+                </h2>
+                <p id="today-subtitle">Organiza tu día y mantén el ritmo.</p>
+              </div>
+              <button
+                class="today-action"
+                onclick="window.location.href = 'rutinas.html'"
+              >
+                Ver plan de hoy
+                <span data-lucide="arrow-right"></span>
+              </button>
+            </div>
+
+            <div class="sub-header">
+              <div class="sub-title">Mis Rutinas</div>
+              <div
+                class="sub-action"
+                onclick="window.location.href = 'rutinas.html'"
+              >
+                Ver todas
+                <span data-lucide="arrow-right"></span>
+              </div>
+            </div>
+
+            <div id="dashboard-routines">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <span data-lucide="inbox"></span>
+                </div>
+                <div class="empty-title">Sin rutinas aún</div>
+                <div class="empty-subtitle">
+                  Crea tu primera rutina para comenzar
+                </div>
+                <button class="btn-start" onclick="createRoutineModal()">
+                  <span data-lucide="plus"></span>
+                  Nueva Rutina
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ROUTINES -->
+          <section class="section" id="routines">
+            <div id="routines-list">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <span data-lucide="inbox"></span>
+                </div>
+                <div class="empty-title">Sin rutinas aún</div>
+                <div class="empty-subtitle">
+                  Crea tu primera rutina para comenzar
+                </div>
+                <button class="btn-start" onclick="createRoutineModal()">
+                  <span data-lucide="plus"></span>
+                  Nueva Rutina
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- PROGRESS -->
+          <section class="section" id="progress">
+            <div class="sub-header" style="margin-bottom: 20px">
+              <div class="sub-title" style="font-size: 18px">Tu Progreso</div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon-box red">
+                    <span data-lucide="circle-check"></span>
+                  </div>
+                </div>
+                <div class="stat-value" id="prog-percent">0%</div>
+                <div class="stat-label">Completadas</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon-box green">
+                    <span data-lucide="target"></span>
+                  </div>
+                </div>
+                <div class="stat-value" id="prog-consistency">0%</div>
+                <div class="stat-label">Consistencia</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon-box gold">
+                    <span data-lucide="flame"></span>
+                  </div>
+                </div>
+                <div class="stat-value" id="prog-streak">0</div>
+                <div class="stat-label">Racha</div>
+              </div>
+            </div>
+            <div id="executions-list">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <span data-lucide="bar-chart-3"></span>
+                </div>
+                <div class="empty-title">Sin historial aún</div>
+                <div class="empty-subtitle">
+                  Completa rutinas para ver tu progreso
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- PROFILE -->
+          <section class="section" id="profile">
+            <div class="sub-header" style="margin-bottom: 20px">
+              <div class="sub-title" style="font-size: 18px">Mi Perfil</div>
+            </div>
+            <div class="profile-header-card">
+              <div class="profile-avatar-lg" id="profile-avatar">
+                <span data-lucide="user"></span>
+              </div>
+              <div>
+                <div class="profile-name" id="profile-name">Juan</div>
+                <div class="profile-email" id="profile-email">
+                  juan@example.com
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/lucide.min.js"></script>
+    <script src="../renderer/dashboard.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

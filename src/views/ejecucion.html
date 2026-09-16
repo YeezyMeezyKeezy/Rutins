@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rutins - Rutina Activa</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/ejecucion.css" />
+  </head>
+  <body>
+    <div class="app-body">
+      <!-- SIDEBAR mínima (solo salir) -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <img
+            src="../../assets/icons/Rutins.png"
+            alt="Rutins"
+            class="sidebar-logo-img"
+          />
+          <div class="sidebar-name">Rutins</div>
+        </div>
+        <div class="sidebar-section">Sesión activa</div>
+        <div class="nav-item" onclick="goBack()">
+          <span class="nav-icon">←</span> Volver
+        </div>
+        <div class="sidebar-footer">
+          <div class="session-hint">
+            No cierres la app mientras ejecutas la rutina
+          </div>
+        </div>
+      </aside>
+
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title" id="routine-name">Mi Rutina</div>
+          <div class="topbar-spacer"></div>
+          <span class="topbar-badge" id="routine-type">Tipo</span>
+        </div>
+
+        <div class="content">
+          <div class="exec-layout">
+            <!-- COLUMNA PRINCIPAL -->
+            <div class="exec-main">
+              <div class="timer-card">
+                <div class="timer-display" id="timer-display">00:00</div>
+                <div class="timer-label">Tiempo restante</div>
+              </div>
+
+              <div class="activity-card" id="current-activity">
+                <div class="activity-header">
+                  <div class="activity-number" id="activity-number">1</div>
+                  <div class="activity-title-group">
+                    <div class="activity-name" id="activity-name">
+                      Actividad
+                    </div>
+                    <div class="activity-duration" id="activity-duration">
+                      5 minutos
+                    </div>
+                  </div>
+                  <div class="activity-status" id="activity-status">
+                    En progreso
+                  </div>
+                </div>
+              </div>
+
+              <div class="controls" id="controls">
+                <button
+                  class="btn btn-secondary"
+                  id="pause-btn"
+                  onclick="togglePause()"
+                >
+                  ⏸ Pausar
+                </button>
+                <button class="btn btn-primary" onclick="skipActivity()">
+                  ⏭ Siguiente
+                </button>
+                <button class="btn btn-ghost" onclick="showConfirmQuit()">
+                  Salir
+                </button>
+              </div>
+
+              <div class="progress-card">
+                <div class="progress-label">Progreso general</div>
+                <div class="progress-bar">
+                  <div
+                    class="progress-fill"
+                    id="progress-fill"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <div class="progress-text" id="progress-text">0 de 0</div>
+              </div>
+
+              <!-- Resumen al terminar -->
+              <div class="summary-section" id="summary-section">
+                <div class="summary-message">
+                  <h3>¡Rutina completada!</h3>
+                  <p>
+                    Buen trabajo. Guarda el registro para verlo en Progreso.
+                  </p>
+                </div>
+                <div class="summary-stats">
+                  <div class="summary-stat">
+                    <div class="summary-stat-value" id="total-time">0 min</div>
+                    <div class="summary-stat-label">Tiempo total</div>
+                  </div>
+                  <div class="summary-stat">
+                    <div class="summary-stat-value" id="activities-completed">
+                      0
+                    </div>
+                    <div class="summary-stat-label">Actividades</div>
+                  </div>
+                </div>
+                <div class="controls">
+                  <button class="btn btn-primary" onclick="finishRoutine()">
+                    ✓ Guardar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- COLUMNA LISTA -->
+            <div class="exec-side">
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">Actividades</div>
+                </div>
+                <div class="card-body" id="activities-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="confirm-modal">
+      <div class="modal-content">
+        <h2 class="modal-title">Salir de la rutina</h2>
+        <p class="modal-message">
+          ¿Salir sin completar? El progreso de esta sesión se perderá.
+        </p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeConfirmQuit()">
+            Cancelar
+          </button>
+          <button class="btn btn-danger" onclick="quitRoutine()">Salir</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../renderer/ejecucion.js"></script>
+  </body>
+</html>

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rutins - Configuración</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/configuracion.css" />
+  </head>
+  <body>
+    <div class="app-body">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <img
+            src="../../assets/icons/Rutins.png"
+            alt="Rutins"
+            class="sidebar-logo-img"
+          />
+          <div class="sidebar-name">Rutins</div>
+        </div>
+
+        <div class="sidebar-section">Principal</div>
+        <div class="nav-item" onclick="window.location.href = 'dashboard.html'">
+          <span class="nav-icon" data-lucide="home"></span>
+          Dashboard
+        </div>
+        <a class="nav-item" href="rutinas.html">
+          <span class="nav-icon" data-lucide="clipboard-list"></span>
+          Mis Rutinas
+          <span class="nav-badge" id="routines-badge" style="display: none"
+            >0</span
+          >
+        </a>
+        <div class="nav-item" onclick="window.location.href = 'progreso.html'">
+          <span class="nav-icon" data-lucide="bar-chart-3"></span>
+          Progreso
+        </div>
+        <div class="nav-item active">
+          <span class="nav-icon" data-lucide="settings"></span>
+          Configuración
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-mini">
+            <div class="user-avatar" id="user-avatar">J</div>
+            <div>
+              <div class="user-name" id="user-name">Juan P.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title">Configuración</div>
+        </div>
+
+        <div class="content">
+          <!-- PERFIL -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span data-lucide="user"></span>
+                Perfil
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="profile-message" class="message"></div>
+
+              <div class="form-group">
+                <label class="form-label">Nombre</label>
+                <input
+                  type="text"
+                  id="profile-name"
+                  class="form-input"
+                  placeholder="Tu nombre"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  id="profile-email"
+                  class="form-input"
+                  disabled
+                />
+                <div class="info-box">
+                  El email no se puede cambiar por seguridad.
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-secondary" onclick="resetProfileForm()">
+                  Descartar
+                </button>
+                <button class="btn btn-primary" onclick="saveProfile()">
+                  Guardar cambios
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEGURIDAD -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span data-lucide="lock"></span>
+                Seguridad
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="security-message" class="message"></div>
+
+              <div class="form-group">
+                <label class="form-label">Contraseña actual</label>
+                <input
+                  type="password"
+                  id="current-password"
+                  class="form-input"
+                  placeholder="Tu contraseña actual"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Nueva contraseña</label>
+                <input
+                  type="password"
+                  id="new-password"
+                  class="form-input"
+                  placeholder="Mínimo 6 caracteres"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Confirmar contraseña</label>
+                <input
+                  type="password"
+                  id="confirm-password"
+                  class="form-input"
+                  placeholder="Repite la nueva contraseña"
+                />
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-secondary" onclick="resetPasswordForm()">
+                  Cancelar
+                </button>
+                <button class="btn btn-primary" onclick="changePassword()">
+                  Cambiar contraseña
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACERCA DE -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span data-lucide="info"></span>
+                Acerca de Rutins
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="about-text">
+                <strong>Rutins</strong> es una aplicación de escritorio para
+                organizar y dar seguimiento a hábitos y rutinas diarias. Crea
+                rutinas, registra ejecuciones y revisa tu progreso de forma
+                simple.
+              </p>
+              <div class="about-meta">
+                <div>
+                  <span class="meta-label">Versión</span><span>1.0.0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SESIÓN -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Sesión</div>
+            </div>
+            <div class="card-body">
+              <button class="btn btn-secondary btn-full" onclick="logout()">
+                <span data-lucide="log-out"></span>
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+
+          <!-- PELIGRO -->
+          <div class="card danger-card">
+            <div class="card-header">
+              <div class="card-title danger-title">
+                <span data-lucide="triangle-alert"></span>
+                Zona de peligro
+              </div>
+            </div>
+            <div class="card-body danger-body">
+              <div>
+                <div class="settings-title">Eliminar cuenta</div>
+                <div class="settings-sub">
+                  Esta acción es permanente y no se puede deshacer.
+                </div>
+              </div>
+              <button class="btn btn-danger" onclick="deleteAccountConfirm()">
+                <span data-lucide="trash-2"></span>
+                Eliminar cuenta
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/lucide.min.js"></script>
+    <script src="../renderer/configuracion.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rutins - Autenticación</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/login.css" />
+  </head>
+  <body>
+    <div class="login-layout">
+      <!-- Panel izquierdo: formulario -->
+      <div class="login-center">
+        <div class="login-panel">
+          <div class="login-logo-area">
+            <img
+              src="../../assets/icons/RutinsFondo.png"
+              alt="Rutins"
+              class="login-logo-img"
+            />
+            <div class="login-slogan">
+              Welcome to your<br />no-excuses zone.
+            </div>
+            <div class="login-sub">Small steps. Real progress.</div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="form-tabs">
+            <button
+              type="button"
+              class="form-tab active"
+              onclick="switchTab('login')"
+            >
+              Iniciar Sesión
+            </button>
+            <button
+              type="button"
+              class="form-tab"
+              onclick="switchTab('register')"
+            >
+              Crear Cuenta
+            </button>
+          </div>
+
+          <!-- LOGIN -->
+          <div class="form-section active" id="login-form">
+            <div id="login-message" class="message"></div>
+
+            <form onsubmit="handleLogin(event)">
+              <div class="form-group">
+                <label class="form-label" for="login-email">Email</label>
+                <input
+                  type="email"
+                  id="login-email"
+                  class="form-input"
+                  placeholder="tu@email.com"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="login-password"
+                  >Contraseña</label
+                >
+                <input
+                  type="password"
+                  id="login-password"
+                  class="form-input"
+                  placeholder="Tu contraseña"
+                  required
+                />
+              </div>
+
+              <div class="remember-row">
+                <label><input type="checkbox" /> Recordarme</label>
+                <a href="#">¿Olvidaste tu contraseña?</a>
+              </div>
+
+              <button type="submit" class="login-full-btn" id="login-btn">
+                Iniciar Sesión
+              </button>
+
+              <div class="loading" id="login-loading">
+                <div class="spinner"></div>
+                <p>Verificando...</p>
+              </div>
+            </form>
+          </div>
+
+          <!-- REGISTER -->
+          <div class="form-section" id="register-form">
+            <div id="register-message" class="message"></div>
+
+            <form onsubmit="handleRegister(event)">
+              <div class="form-group">
+                <label class="form-label" for="register-name">Nombre</label>
+                <input
+                  type="text"
+                  id="register-name"
+                  class="form-input"
+                  placeholder="Tu nombre"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="register-email">Email</label>
+                <input
+                  type="email"
+                  id="register-email"
+                  class="form-input"
+                  placeholder="tu@email.com"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="register-password"
+                  >Contraseña</label
+                >
+                <input
+                  type="password"
+                  id="register-password"
+                  class="form-input"
+                  placeholder="Mínimo 6 caracteres"
+                  required
+                  minlength="6"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="register-password-confirm"
+                  >Confirmar Contraseña</label
+                >
+                <input
+                  type="password"
+                  id="register-password-confirm"
+                  class="form-input"
+                  placeholder="Repite tu contraseña"
+                  required
+                />
+              </div>
+
+              <button type="submit" class="login-full-btn" id="register-btn">
+                Crear Cuenta
+              </button>
+
+              <div class="loading" id="register-loading">
+                <div class="spinner"></div>
+                <p>Creando cuenta...</p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel derecho -->
+      <div class="login-right-panel">
+        <div>
+          <div class="why-label">Why Rutins?</div>
+          <div class="why-title">All your routines.<br />One place.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <span data-lucide="dumbbell"></span>
+          </div>
+          <div>
+            <div class="feature-title">Exercise Routines</div>
+            <div class="feature-desc">Track sets, reps and rest times</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <span data-lucide="lightbulb"></span>
+          </div>
+          <div>
+            <div class="feature-title">Daily Habits</div>
+            <div class="feature-desc">Build consistency day by day</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <span data-lucide="library"></span>
+          </div>
+          <div>
+            <div class="feature-title">Study Sessions</div>
+            <div class="feature-desc">Stay on top of your learning</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/lucide.min.js"></script>
+    <script src="../renderer/login.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

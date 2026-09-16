@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rutins - Mis Rutinas</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/rutinas.css" />
+  </head>
+  <body>
+    <div class="app-body">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <img
+            src="../../assets/icons/Rutins.png"
+            alt="Rutins"
+            class="sidebar-logo-img"
+          />
+          <div class="sidebar-name">Rutins</div>
+        </div>
+
+        <div class="sidebar-section">Principal</div>
+        <a class="nav-item" href="dashboard.html">
+          <span class="nav-icon" data-lucide="home"></span>
+          Dashboard
+        </a>
+        <div class="nav-item active">
+          <span class="nav-icon" data-lucide="clipboard-list"></span>
+          Mis Rutinas
+          <span class="nav-badge" id="routines-badge" style="display: none"
+            >0</span
+          >
+        </div>
+        <a class="nav-item" href="progreso.html">
+          <span class="nav-icon" data-lucide="bar-chart-3"></span>
+          Progreso
+        </a>
+        <a class="nav-item" href="configuracion.html">
+          <span class="nav-icon" data-lucide="settings"></span>
+          Configuración
+        </a>
+
+        <div class="sidebar-footer">
+          <div
+            class="user-mini"
+            onclick="goToSettings()"
+            style="cursor: pointer"
+          >
+            <div class="user-avatar" id="user-avatar">J</div>
+            <div>
+              <div class="user-name" id="user-name">Juan P.</div>
+            </div>
+            <span class="user-menu-icon" data-lucide="ellipsis"></span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title">Mis Rutinas</div>
+          <div class="topbar-spacer"></div>
+          <button class="topbar-btn" onclick="openCreateModal()">
+            <span data-lucide="plus"></span>
+            Nueva Rutina
+          </button>
+        </div>
+
+        <div class="content">
+          <div id="routines-list">
+            <div class="empty-state">
+              <div class="empty-icon">
+                <span data-lucide="clipboard-list"></span>
+              </div>
+              <div class="empty-title">Sin rutinas aún</div>
+              <div class="empty-subtitle">
+                Crea tu primera rutina para comenzar
+              </div>
+              <button class="btn-start" onclick="openCreateModal()">
+                <span data-lucide="plus"></span>
+                Crear Primera Rutina
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL CREAR / EDITAR -->
+    <div class="modal" id="routine-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-title">Nueva Rutina</h2>
+          <button type="button" class="modal-close" onclick="closeModal()">
+            <span data-lucide="x"></span>
+          </button>
+        </div>
+
+        <form onsubmit="saveRoutine(event)">
+          <div class="form-group">
+            <label class="form-label" for="routine-name"
+              >Nombre de la Rutina <span class="req">*</span></label
+            >
+            <input
+              type="text"
+              id="routine-name"
+              class="form-input"
+              placeholder="Ej: Correr por la mañana"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="routine-description"
+              >Descripción</label
+            >
+            <textarea
+              id="routine-description"
+              class="form-textarea"
+              placeholder="Describe tu rutina..."
+            ></textarea>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="routine-type"
+                >Tipo <span class="req">*</span></label
+              >
+              <select id="routine-type" class="form-select" required>
+                <option value="">Selecciona un tipo</option>
+                <option value="1">Hábitos</option>
+                <option value="2">Ejercicio</option>
+                <option value="3">Estudio</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="routine-frequency"
+                >Frecuencia <span class="req">*</span></label
+              >
+              <select id="routine-frequency" class="form-select" required>
+                <option value="">Selecciona frecuencia</option>
+                <option value="Diaria">Diaria</option>
+                <option value="3 veces/semana">3 veces/semana</option>
+                <option value="2 veces/semana">2 veces/semana</option>
+                <option value="1 vez/semana">1 vez/semana</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 4px">
+            <label class="checkbox-label">
+              <input type="checkbox" id="routine-active" checked />
+              <span>Rutina activa</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Actividades <span class="req">*</span>
+            </label>
+            <div class="activities-list" id="activities-list"></div>
+            <p class="field-error" id="activities-error" hidden>
+              Agrega al menos una actividad con nombre.
+            </p>
+            <button
+              type="button"
+              class="btn-secondary-full"
+              onclick="addActivityField()"
+            >
+              <span data-lucide="plus"></span>
+              Agregar Actividad
+            </button>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="closeModal()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <span data-lucide="check"></span>
+              Guardar Rutina
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="../../assets/js/lucide.min.js"></script>
+    <script src="../renderer/rutinas.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
