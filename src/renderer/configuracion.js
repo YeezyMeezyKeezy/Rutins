@@ -26,8 +26,7 @@ async function updateRoutinesBadge(userId) {
 
   try {
     const result = await window.api.rutina.obtenerTodas(userId);
-    const count =
-      result.success && result.data ? result.data.length : 0;
+    const count = result.success && result.data ? result.data.length : 0;
 
     if (count > 0) {
       badge.textContent = count;
@@ -115,6 +114,44 @@ async function changePassword() {
     resetPasswordForm();
   } else {
     showMessage("security-message", "Error al cambiar la contraseña", "error");
+  }
+}
+
+async function exportAccount() {
+  const result = await window.api.cuenta.exportar(currentUser.id_usuario);
+  if (result.canceled) return;
+  if (result.success) {
+    showMessage("data-message", "Cuenta exportada correctamente.", "success");
+  } else {
+    showMessage("data-message", result.error || "No se pudo exportar", "error");
+  }
+}
+
+async function importAccount() {
+  if (
+    !confirm(
+      "Si el email del archivo ya existe en este PC, se borrarán sus rutinas y progreso actuales y se reemplazarán por los del archivo.\n\n¿Quieres importar la cuenta?",
+    )
+  ) {
+    return;
+  }
+
+  const result = await window.api.cuenta.importar();
+  if (result.canceled) return;
+
+  if (result.success) {
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify({
+        id_usuario: result.id_usuario,
+        nombre_usuario: result.nombre_usuario,
+        email_usuario: result.email_usuario,
+      }),
+    );
+    showMessage("data-message", "Cuenta importada correctamente.", "success");
+    window.location.reload();
+  } else {
+    showMessage("data-message", result.error || "No se pudo importar", "error");
   }
 }
 

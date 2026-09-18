@@ -24,7 +24,7 @@ contextBridge.exposeInMainWorld("api", {
     },
     eliminar: async (id) => {
       return ipcRenderer.invoke("usuario:eliminar", id);
-    }
+    },
   },
 
   // ============================================
@@ -113,6 +113,19 @@ contextBridge.exposeInMainWorld("api", {
     },
     actualizar: async (idUsuario, datos) => {
       return ipcRenderer.invoke("progreso:actualizar", idUsuario, datos);
+    },
+  },
+
+  //============================================
+  // CUENTA
+  // ============================================
+
+  cuenta: {
+    exportar: async (idUsuario) => {
+      return ipcRenderer.invoke("cuenta:exportar", idUsuario);
+    },
+    importar: async () => {
+      return ipcRenderer.invoke("cuenta:importar");
     },
   },
 });

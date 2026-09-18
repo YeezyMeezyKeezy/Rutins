@@ -158,6 +158,33 @@
             </div>
           </div>
 
+          <!-- DATOS -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span data-lucide="hard-drive"></span>
+                Datos de la cuenta
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="data-message" class="message"></div>
+              <p class="about-text">
+                Rutins guarda todo en este dispositivo. Para usar la misma
+                cuenta en otro PC, exporta un archivo y luego impórtalo allí.
+              </p>
+              <div class="form-actions">
+                <button class="btn btn-secondary" onclick="exportAccount()">
+                  <span data-lucide="download"></span>
+                  Exportar cuenta
+                </button>
+                <button class="btn btn-primary" onclick="importAccount()">
+                  <span data-lucide="upload"></span>
+                  Importar cuenta
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- ACERCA DE -->
           <div class="card">
             <div class="card-header">

@@ -1,5 +1,5 @@
 {
-  "name": "rutins",
+  "name": "Rutins",
   "version": "1.0.0",
   "description": "Aplicación para organización y seguimiento de hábitos y rutinas diarias",
   "main": "main.js",
@@ -28,6 +28,7 @@
     "files": [
       "main.js",
       "preload.js",
+      "ipcHandlers.js",
       "src/**/*",
       "assets/**/*",
       "package.json"
@@ -63,5 +64,5 @@
     }
   },
   "author": "Angelo Cruz",
-  "license": "MIT"
+  "license": "UNLICENSED"
 }
