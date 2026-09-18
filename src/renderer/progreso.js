@@ -127,6 +127,25 @@ function displayProgressCards(progress) {
 }
 
 // ============================================
+// REPORTES
+// ============================================
+
+async function generarReporte() {
+  try {
+    const result = await window.api.reporte.generar(currentUserId);
+    if (result.canceled) return;
+    if (result.success) {
+      alert("Reporte guardado correctamente.");
+    } else {
+      alert(result.error || "No se pudo generar el reporte");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Error al generar el reporte");
+  }
+}
+
+// ============================================
 // GRÁFICO ÚLTIMOS 7 DÍAS
 // ============================================
 

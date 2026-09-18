@@ -7,6 +7,7 @@ const actividadService = require("./src/services/actividadService");
 const ejecucionService = require("./src/services/ejecucionService");
 const progresoService = require("./src/services/progresoService");
 const cuentaService = require("./src/services/cuentaService");
+const reporteService = require("./src/services/reporteService");
 
 // ============================================
 // USUARIO
@@ -309,6 +310,43 @@ ipcMain.handle("cuenta:importar", async (event) => {
     return cuentaService.importar(payload);
   } catch (error) {
     console.error("Error importando cuenta:", error);
+    return { success: false, error: error.message };
+  }
+});
+
+// ============================================
+// REPORTES
+// ============================================
+
+ipcMain.handle("reporte:generar", async (event, idUsuario) => {
+  try {
+    const data = reporteService.construir(idUsuario);
+    const html = reporteService.html(data);
+    const win = BrowserWindow.fromWebContents(event.sender);
+
+    const { canceled, filePath } = await dialog.showSaveDialog(win, {
+      title: "Guardar reporte",
+      defaultPath: "reporte-rutins.pdf",
+      filters: [{ name: "PDF", extensions: ["pdf"] }],
+    });
+    if (canceled || !filePath) return { success: false, canceled: true };
+
+    const pdfWin = new BrowserWindow({
+      show: false,
+      webPreferences: { offscreen: true },
+    });
+    await pdfWin.loadURL(
+      "data:text/html;charset=utf-8," + encodeURIComponent(html),
+    );
+    const pdf = await pdfWin.webContents.printToPDF({
+      printBackground: true,
+      pageSize: "A4",
+    });
+    pdfWin.close();
+    fs.writeFileSync(filePath, pdf);
+    return { success: true, filePath };
+  } catch (error) {
+    console.error("Error generando reporte:", error);
     return { success: false, error: error.message };
   }
 });

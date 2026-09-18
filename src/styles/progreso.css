@@ -258,6 +258,14 @@ a.nav-item.active {
   flex: 1;
 }
 
+.period-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: default;
+  user-select: none;
+}
+
 .tabs {
   display: flex;
   gap: 2px;
@@ -279,6 +287,18 @@ a.nav-item.active {
   background: white;
   color: var(--dark);
   box-shadow: var(--shadow-sm);
+}
+
+.tab,
+.tabs .tab {
+  cursor: default;
+  pointer-events: none;
+}
+
+.tab:hover,
+.tabs .tab:hover {
+  background: transparent;
+  color: inherit;
 }
 
 .content {
@@ -726,4 +746,45 @@ a.nav-item:hover {
 }
 .prog-detail-item:has(.prog-detail-fill.green) .prog-detail-pct {
   color: var(--est);
+}
+
+/* Botón de reporte */
+
+.section-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.section-label-row .section-label {
+  margin-bottom: 0;
+}
+
+.btn-report {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--mid);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-report:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+  background: var(--brand-pale);
+}
+
+.btn-report svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
 }

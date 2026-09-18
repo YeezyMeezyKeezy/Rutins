@@ -128,4 +128,13 @@ contextBridge.exposeInMainWorld("api", {
       return ipcRenderer.invoke("cuenta:importar");
     },
   },
+
+  //============================================
+  // REPORTES
+  // ============================================
+
+  reporte: {
+    generar: async (idUsuario) =>
+      ipcRenderer.invoke("reporte:generar", idUsuario),
+  },
 });

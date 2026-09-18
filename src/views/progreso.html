@@ -64,9 +64,8 @@
         <div class="topbar">
           <div class="topbar-title">Tu progreso</div>
           <div class="topbar-spacer"></div>
-          <div class="tabs">
-            <div class="tab active">Últimos 7 días</div>
-          </div>
+
+          <div class="period-label">Últimos 7 días</div>
         </div>
 
         <div class="content">
@@ -132,7 +131,13 @@
           </div>
 
           <!-- Historial -->
-          <div class="section-label">Historial de ejecuciones</div>
+          <div class="section-label-row">
+            <div class="section-label">Historial de ejecuciones</div>
+            <button type="button" class="btn-report" onclick="generarReporte()">
+              <span data-lucide="download"></span>
+              Reporte
+            </button>
+          </div>
           <div class="card">
             <div class="card-body" style="padding: 0">
               <table class="executions-table">
