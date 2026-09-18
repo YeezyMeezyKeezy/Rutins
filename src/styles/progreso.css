@@ -386,39 +386,53 @@ a.nav-item.active {
 }
 
 /* Chart */
+#week-chart,
+.week-chart,
 .chart-container {
   display: flex;
   align-items: flex-end;
+  justify-content: space-between;
   gap: 8px;
-  height: 100px;
-  padding: 0 4px;
+  height: 160px; /* una sola altura */
+  padding: 8px 4px 0;
 }
 
 .chart-bar-item {
   flex: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
 }
 
 .chart-bar-fill {
-  width: 100%;
-  border-radius: 4px 4px 0 0;
-  background: var(--brand);
-  opacity: 0.75;
+  width: 70%;
+  max-width: 28px;
   min-height: 4px;
-  transition: height 0.3s ease;
+  border-radius: 6px 6px 2px 2px;
+  background: #e4e4f0;
+  transition: height 0.2s ease;
 }
 
 .chart-bar-fill.active {
-  opacity: 1;
+  background: var(--brand);
+}
+
+.chart-bar-count {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--mid);
+  line-height: 1;
 }
 
 .chart-bar-label {
-  font-size: 9px;
+  font-size: 10.5px;
   color: var(--muted);
-  font-weight: 500;
+  text-transform: capitalize;
 }
 
 .chart-note {
@@ -668,4 +682,48 @@ a.nav-item:hover {
   width: 14px;
   height: 14px;
   stroke: currentColor;
+}
+
+/* Iconos del desglose */
+.prog-detail-icon.red {
+  background: var(--brand-pale);
+  color: var(--brand);
+}
+.prog-detail-icon.blue {
+  background: #e8f4fb;
+  color: var(--hab);
+}
+.prog-detail-icon.green {
+  background: #e9f7ee;
+  color: var(--est);
+}
+
+/* Barras del desglose */
+.prog-detail-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+.prog-detail-fill.red {
+  background: var(--brand);
+}
+.prog-detail-fill.blue {
+  background: var(--hab);
+}
+.prog-detail-fill.green {
+  background: var(--est);
+}
+
+.prog-detail-pct {
+  font-size: 12px;
+  font-weight: 700;
+}
+.prog-detail-icon.red + * + * + .prog-detail-pct,
+.prog-detail-item:has(.prog-detail-fill.red) .prog-detail-pct {
+  color: var(--brand);
+}
+.prog-detail-item:has(.prog-detail-fill.blue) .prog-detail-pct {
+  color: var(--hab);
+}
+.prog-detail-item:has(.prog-detail-fill.green) .prog-detail-pct {
+  color: var(--est);
 }

@@ -39,7 +39,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (window.lucide) lucide.createIcons();
 });
 
-
 // ============================================
 // CARGAR DATOS
 // ============================================
@@ -50,8 +49,7 @@ async function updateRoutinesBadge(userId) {
 
   try {
     const result = await window.api.rutina.obtenerTodas(userId);
-    const count =
-      result.success && result.data ? result.data.length : 0;
+    const count = result.success && result.data ? result.data.length : 0;
 
     if (count > 0) {
       badge.textContent = count;
@@ -88,6 +86,34 @@ async function loadProgressData(userId) {
   }
 }
 
+function formatDuration(totalSec) {
+  const sec = parseInt(totalSec, 10) || 0;
+  if (sec <= 0) return "—";
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  if (m === 0) return `${s} s`;
+  if (s === 0) return `${m} min`;
+  return `${m} min ${s} s`;
+}
+
+function getTypeStyle(nombreTipo) {
+  const t = (nombreTipo || "").toLowerCase();
+  if (
+    t.includes("ejercicio") ||
+    t.includes("exercise") ||
+    t.includes("workout")
+  ) {
+    return { icon: "dumbbell", chip: "", row: "red", fill: "red" };
+  }
+  if (t.includes("hábito") || t.includes("habit") || t.includes("lectura")) {
+    return { icon: "book-open", chip: "blue", row: "blue", fill: "blue" };
+  }
+  if (t.includes("estudio") || t.includes("study")) {
+    return { icon: "library", chip: "green", row: "green", fill: "green" };
+  }
+  return { icon: "clipboard-list", chip: "", row: "red", fill: "red" };
+}
+
 function displayProgressCards(progress) {
   const pct = Math.round(progress.porcentaje_progreso || 0);
   const set = (id, value) => {
@@ -104,44 +130,55 @@ function displayProgressCards(progress) {
 // GRÁFICO ÚLTIMOS 7 DÍAS
 // ============================================
 
+function toLocalDateStr(value) {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 function displayWeekChart(executions) {
   const chartContainer = document.getElementById("week-chart");
   if (!chartContainer) return;
 
   const today = new Date();
-  const last7Days = [];
+  today.setHours(0, 0, 0, 0);
 
+  const last7Days = [];
   for (let i = 6; i >= 0; i--) {
     const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split("T")[0];
+    date.setDate(today.getDate() - i);
     last7Days.push({
-      date: dateStr,
+      date: toLocalDateStr(date),
       day: date.toLocaleDateString("es-ES", { weekday: "short" }),
       count: 0,
     });
   }
 
-  executions.forEach((execution) => {
-    const executionDate = (execution.fecha_ejecucion || "").split("T")[0];
+  (executions || []).forEach((execution) => {
+    if (!execution.completada_ejecucion) return;
+    const executionDate = toLocalDateStr(execution.fecha_ejecucion);
     const dayData = last7Days.find((d) => d.date === executionDate);
-    if (dayData && execution.completada_ejecucion) {
-      dayData.count++;
-    }
+    if (dayData) dayData.count++;
   });
 
   const maxCount = Math.max(...last7Days.map((d) => d.count), 1);
 
   chartContainer.innerHTML = last7Days
     .map((day) => {
-      const height = Math.max((day.count / maxCount) * 100, 4);
-      const isActive = day.count === maxCount && day.count > 0;
+      const maxBar = 110; // px de barra máxima
+      const height =
+        day.count > 0 ? Math.max((day.count / maxCount) * maxBar, 8) : 4;
+      const hasData = day.count > 0;
+
       return `
       <div class="chart-bar-item">
-        <div class="chart-bar-fill ${isActive ? "active" : ""}" style="height:${height}%;"></div>
+        <div class="chart-bar-count">${hasData ? day.count : ""}</div>
+        <div class="chart-bar-fill ${hasData ? "active" : ""}" style="height:${height}px;"></div>
         <div class="chart-bar-label">${day.day}</div>
-      </div>
-    `;
+      </div>`;
     })
     .join("");
 
@@ -171,44 +208,35 @@ function displayBreakdown(executions) {
   const byRoutine = {};
   executions.forEach((e) => {
     const name = e.nombre_rutina || "Sin nombre";
-    if (!byRoutine[name]) byRoutine[name] = { total: 0, done: 0 };
+    if (!byRoutine[name]) {
+      byRoutine[name] = {
+        total: 0,
+        done: 0,
+        tipo: e.nombre_tiporutina || "",
+      };
+    }
     byRoutine[name].total++;
     if (e.completada_ejecucion) byRoutine[name].done++;
   });
 
-  const icons = ["dumbbell", "book-open", "library", "target", "star"];
-  const colors = [
-    "var(--ex)",
-    "var(--hab)",
-    "var(--est)",
-    "var(--brand)",
-    "#d68910",
-  ];
-  const bgs = [
-    "var(--brand-pale)",
-    "#e8f4fb",
-    "#e9f7ee",
-    "var(--brand-pale)",
-    "#fef9e7",
-  ];
-
   const entries = Object.entries(byRoutine).slice(0, 5);
 
   container.innerHTML = entries
-    .map(([name, data], i) => {
+    .map(([name, data]) => {
       const pct = data.total ? Math.round((data.done / data.total) * 100) : 0;
+      const style = getTypeStyle(data.tipo || name);
+
       return `
       <div class="prog-detail-item">
-        <div class="prog-detail-icon" style="background:${bgs[i % bgs.length]};color:${colors[i % colors.length]};">
-          <span data-lucide="${icons[i % icons.length]}"></span>
+        <div class="prog-detail-icon ${style.row || "red"}">
+          <span data-lucide="${style.icon}"></span>
         </div>
         <div class="prog-detail-name">${name}</div>
         <div class="prog-detail-bar">
-          <div class="prog-detail-fill" style="width:${pct}%;background:${colors[i % colors.length]};"></div>
+          <div class="prog-detail-fill ${style.fill}" style="width:${pct}%;"></div>
         </div>
-        <div class="prog-detail-pct" style="color:${colors[i % colors.length]};">${pct}%</div>
-      </div>
-    `;
+        <div class="prog-detail-pct">${pct}%</div>
+      </div>`;
     })
     .join("");
 
@@ -239,6 +267,7 @@ function displayExecutions(executions) {
   }
 
   const sorted = executions
+    .slice()
     .sort((a, b) => new Date(b.fecha_ejecucion) - new Date(a.fecha_ejecucion))
     .slice(0, 20);
 
@@ -254,16 +283,13 @@ function displayExecutions(executions) {
         ? "Completada"
         : "Pendiente";
       const statusClass = execution.completada_ejecucion ? "" : "pending";
-      const timeDisplay = execution.tiempo_total
-        ? `${execution.tiempo_total} min`
-        : "N/A";
       const statusIcon = execution.completada_ejecucion ? "check" : "clock";
 
       return `
       <tr>
         <td>${execution.nombre_rutina || "Sin nombre"}</td>
         <td>${dateStr} ${timeStr}</td>
-        <td>${timeDisplay}</td>
+        <td>${formatDuration(execution.tiempo_total)}</td>
         <td>
           <span class="status-badge ${statusClass}">
             <span data-lucide="${statusIcon}"></span>
@@ -287,4 +313,3 @@ function switchPeriod(period, el) {
 function goToSettings() {
   window.location.href = "configuracion.html";
 }
-

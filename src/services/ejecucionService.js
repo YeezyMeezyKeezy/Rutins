@@ -31,11 +31,15 @@ function obtenerPorRutina(idRutina) {
 
 function obtenerUltimas(idUsuario, dias = 30) {
   return db.selectAll(
-    `SELECT e.*, r.nombre_rutina 
-     FROM ejecucion e 
+    `SELECT e.*,
+            r.nombre_rutina,
+            r.id_tiporutina,
+            t.nombre_tiporutina
+     FROM ejecucion e
      LEFT JOIN rutina r ON e.id_rutina = r.id_rutina
-     WHERE e.id_usuario = ? 
-     AND e.fecha_ejecucion >= datetime('now', '-' || ? || ' days')
+     LEFT JOIN tiporutina t ON r.id_tiporutina = t.id_tiporutina
+     WHERE e.id_usuario = ?
+       AND e.fecha_ejecucion >= datetime('now', '-' || ? || ' days')
      ORDER BY e.fecha_ejecucion DESC`,
     [idUsuario, dias],
   );

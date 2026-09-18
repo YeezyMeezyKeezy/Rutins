@@ -92,16 +92,31 @@ async function loadDashboardData(user) {
         badge.style.display = "inline";
       }
 
-      const active = routines.filter((r) => r.activa);
-      const statToday = document.getElementById("stat-today");
-      if (statToday) statToday.textContent = active.length;
+      const active = routines.filter((r) => r.activa === 1 || r.activa === true);
+      const completedIds = new Set(
+        (executionsToday || [])
+          .filter((e) => e.completada_ejecucion === 1)
+          .map((e) => e.id_rutina),
+      );
 
-      const todaySubtitle = document.getElementById("today-subtitle");
+      const pending = active.filter((r) => !completedIds.has(r.id_rutina)).length;
+      const done = Math.max(0, active.length - pending);
+
+      const statToday = document.getElementById("stat-today");
+      if (statToday) statToday.textContent = pending;
+
+     const todaySubtitle = document.getElementById("today-subtitle");
       if (todaySubtitle) {
-        todaySubtitle.textContent =
-          active.length > 0
-            ? `Tienes ${active.length} rutina${active.length > 1 ? "s" : ""} programada${active.length > 1 ? "s" : ""}. ¡Mantén el foco!`
-            : "No tienes rutinas activas para hoy.";
+        if (active.length === 0) {
+          todaySubtitle.textContent = "No tienes rutinas activas para hoy.";
+        } else if (pending === 0) {
+          todaySubtitle.textContent =
+            "Ya completaste todas las rutinas de hoy. ¡Buen trabajo!";
+        } else if (done === 0) {
+          todaySubtitle.textContent = `Tienes ${pending} rutina${pending > 1 ? "s" : ""} programada${pending > 1 ? "s" : ""}. ¡Mantén el foco!`;
+        } else {
+          todaySubtitle.textContent = `Has completado ${done}. Te ${pending === 1 ? "falta" : "faltan"} ${pending} rutina${pending > 1 ? "s" : ""}.`;
+        }
       }
 
       // Solo el listado del home (ya no usamos la sección interna)

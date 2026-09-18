@@ -99,7 +99,7 @@ function initializeUI() {
 
 function formatDuration(totalSec) {
   const sec = parseInt(totalSec, 10) || 0;
-  if (sec <= 0) return "Sin duración";
+  if (sec <= 0) return "—";
   const m = Math.floor(sec / 60);
   const s = sec % 60;
   if (m === 0) return `${s} s`;
@@ -208,7 +208,6 @@ function startActivityCountdown() {
       timerInterval = null;
       // Pasa automáticamente a la siguiente
       currentActivityIndex++;
-      displayCurrentActivity();
       startActivityCountdown();
     }
   }, 1000);
@@ -257,6 +256,12 @@ function togglePause() {
 
 function skipActivity() {
   if (!activities.length) return;
+
+  const activity = activities[currentActivityIndex];
+  const planned = getActivityDurationSec(activity);
+  const elapsed = Math.max(0, planned - countdownSeconds);
+  totalSeconds += elapsed;
+
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -299,8 +304,8 @@ function finishRoutineUI() {
   document.getElementById("progress-text").textContent =
     `${activities.length} de ${activities.length}`;
 
-  const minutes = Math.floor(totalSeconds / 60);
-  document.getElementById("total-time").textContent = minutes + " min";
+  document.getElementById("total-time").textContent =
+    formatDuration(totalSeconds);
   document.getElementById("activities-completed").textContent =
     activities.length;
 
@@ -314,7 +319,7 @@ async function finishRoutine() {
       id_usuario: userId,
       fecha_ejecucion: new Date().toISOString(),
       completada_ejecucion: 1,
-      tiempo_total: Math.floor(totalSeconds / 60),
+      tiempo_total: totalSeconds,
     });
 
     if (result.success) {
@@ -334,5 +339,3 @@ async function finishRoutine() {
     alert("Error al guardar la rutina");
   }
 }
-
-
