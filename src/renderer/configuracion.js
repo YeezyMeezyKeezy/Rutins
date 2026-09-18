@@ -1,20 +1,16 @@
 let currentUser = null;
 
 window.addEventListener("DOMContentLoaded", async () => {
-  // TEMPORAL (diseño / pruebas)
-  currentUser = {
-    id_usuario: 1,
-    nombre_usuario: "Juan Pérez",
-    email_usuario: "juan@example.com",
-  };
+  const raw =
+    localStorage.getItem("currentUser") ||
+    sessionStorage.getItem("currentUser");
 
-  // REAL:
-  // const userStr = localStorage.getItem('currentUser');
-  // if (!userStr) {
-  //   window.location.href = 'login.html';
-  //   return;
-  // }
-  // currentUser = JSON.parse(userStr);
+  if (!raw) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  currentUser = JSON.parse(raw);
 
   initializeSettings();
   await updateRoutinesBadge(currentUser.id_usuario);
@@ -184,8 +180,9 @@ async function deleteAccountConfirm() {
 }
 
 function logout() {
-  if (confirm("¿Cerrar sesión?")) {
+  if (confirm("¿Seguro que deseas cerrar sesión?")) {
     localStorage.removeItem("currentUser");
+    sessionStorage.removeItem("currentUser");
     window.location.href = "login.html";
   }
 }

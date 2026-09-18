@@ -12,21 +12,16 @@ let totalSeconds = 0;
 // ============================================
 
 window.addEventListener("DOMContentLoaded", async () => {
-  // TEMPORAL (diseño / pruebas)
-  const user = {
-    id_usuario: 1,
-    nombre_usuario: "Juan Pérez",
-    email_usuario: "juan@example.com",
-  };
+  const raw =
+    localStorage.getItem("currentUser") ||
+    sessionStorage.getItem("currentUser");
 
-  // REAL (descomenta cuando actives auth):
-  // const currentUser = localStorage.getItem('currentUser');
-  // if (!currentUser) {
-  //   window.location.href = 'login.html';
-  //   return;
-  // }
-  // const user = JSON.parse(currentUser);
+  if (!raw) {
+    window.location.href = "login.html";
+    return;
+  }
 
+  const user = JSON.parse(raw);
   userId = user.id_usuario;
 
   routineId =

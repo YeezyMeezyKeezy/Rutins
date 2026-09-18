@@ -7,21 +7,16 @@ let activities = [];
 // ============================================
 
 window.addEventListener("DOMContentLoaded", async () => {
-  // TEMPORAL
-  const user = {
-    id_usuario: 1,
-    nombre_usuario: "Juan Pérez",
-    email_usuario: "juan@example.com",
-  };
+  const raw =
+    localStorage.getItem("currentUser") ||
+    sessionStorage.getItem("currentUser");
 
-  // REAL:
-  // const currentUser = localStorage.getItem('currentUser');
-  // if (!currentUser) {
-  //   window.location.href = 'login.html';
-  //   return;
-  // }
-  // const user = JSON.parse(currentUser);
+  if (!raw) {
+    window.location.href = "login.html";
+    return;
+  }
 
+  const user = JSON.parse(raw);
   currentUserId = user.id_usuario;
 
   const firstName = user.nombre_usuario.split(" ")[0];

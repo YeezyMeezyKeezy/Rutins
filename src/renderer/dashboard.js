@@ -4,20 +4,16 @@
 // ============================================
 
 window.addEventListener("DOMContentLoaded", async () => {
-  // --- TEMPORAL (diseño) ---
-  const user = {
-    id_usuario: 1,
-    nombre_usuario: "Juan Pérez",
-    email_usuario: "juan@example.com",
-  };
+  const raw =
+    localStorage.getItem("currentUser") ||
+    sessionStorage.getItem("currentUser");
 
-  // --- REAL (cuando actives login de nuevo) ---
-  // const currentUser = localStorage.getItem('currentUser');
-  // if (!currentUser) {
-  //   window.location.href = 'login.html';
-  //   return;
-  // }
-  // const user = JSON.parse(currentUser);
+  if (!raw) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const user = JSON.parse(raw);
 
   initializeDashboard(user);
   await loadDashboardData(user);
@@ -92,20 +88,24 @@ async function loadDashboardData(user) {
         badge.style.display = "inline";
       }
 
-      const active = routines.filter((r) => r.activa === 1 || r.activa === true);
+      const active = routines.filter(
+        (r) => r.activa === 1 || r.activa === true,
+      );
       const completedIds = new Set(
         (executionsToday || [])
           .filter((e) => e.completada_ejecucion === 1)
           .map((e) => e.id_rutina),
       );
 
-      const pending = active.filter((r) => !completedIds.has(r.id_rutina)).length;
+      const pending = active.filter(
+        (r) => !completedIds.has(r.id_rutina),
+      ).length;
       const done = Math.max(0, active.length - pending);
 
       const statToday = document.getElementById("stat-today");
       if (statToday) statToday.textContent = pending;
 
-     const todaySubtitle = document.getElementById("today-subtitle");
+      const todaySubtitle = document.getElementById("today-subtitle");
       if (todaySubtitle) {
         if (active.length === 0) {
           todaySubtitle.textContent = "No tienes rutinas activas para hoy.";
@@ -248,13 +248,6 @@ function switchSection(sectionId, element) {
   }
 
   if (window.lucide) lucide.createIcons();
-}
-
-function logout() {
-  if (confirm("¿Seguro que deseas cerrar sesión?")) {
-    localStorage.removeItem("currentUser");
-    window.location.href = "login.html";
-  }
 }
 
 function startRoutine(id) {

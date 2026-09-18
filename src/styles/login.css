@@ -109,6 +109,33 @@ body {
   margin-top: 4px;
 }
 
+.login-panel:has(#forgot-form.active) .form-tabs {
+  display: none;
+}
+
+.password-wrap {
+  position: relative;
+}
+.password-wrap .form-input {
+  padding-right: 40px;
+}
+.toggle-pass {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--muted);
+  display: inline-flex;
+  padding: 4px;
+}
+.toggle-pass svg {
+  width: 16px;
+  height: 16px;
+}
+
 /* Tabs */
 .form-tabs {
   display: flex;
