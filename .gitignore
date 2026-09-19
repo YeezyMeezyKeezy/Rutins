@@ -1,2 +1,17 @@
-node_modules
+# Dependencias
+node_modules/
+
+# No versionar el .db
 src/database/data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Sistema y basura local
+.DS_Store
+Thumbs.db
+*.log
+
+# Builds de Electron 
+dist/
+out/
