@@ -40,7 +40,6 @@ body {
 }
 
 /* ── SIDEBAR ── */
-/* ========== SIDEBAR (igual en todas las pantallas) ========== */
 
 .sidebar {
   width: var(--sidebar-w);

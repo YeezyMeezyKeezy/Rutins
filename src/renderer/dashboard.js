@@ -1,8 +1,3 @@
-// ============================================
-// TEMPORAL: desactivar login para ver el diseño
-// Cuando quieras activarlo, descomenta el bloque real
-// ============================================
-
 window.addEventListener("DOMContentLoaded", async () => {
   const raw =
     localStorage.getItem("currentUser") ||

@@ -40,7 +40,6 @@ function actualizar(id, datos) {
   values.push(id);
 
   if (updates.length === 1) {
-    // solo fecha último acceso: aún así se actualiza
   }
 
   const query = `UPDATE usuario SET ${updates.join(", ")} WHERE id_usuario = ?`;

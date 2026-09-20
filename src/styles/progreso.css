@@ -40,7 +40,7 @@ body {
 }
 
 /* Sidebar */
-/* ========== SIDEBAR (igual en todas las pantallas) ========== */
+
 .sidebar {
   width: var(--sidebar-w);
   min-width: var(--sidebar-w);
@@ -413,7 +413,7 @@ a.nav-item.active {
   align-items: flex-end;
   justify-content: space-between;
   gap: 8px;
-  height: 160px; /* una sola altura */
+  height: 160px;
   padding: 8px 4px 0;
 }
 

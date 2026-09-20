@@ -41,7 +41,7 @@ body {
   min-height: 100vh;
 }
 
-/* ── Centro (formulario) ── */
+/* ── formulario ── */
 .login-center {
   flex: 1;
   display: flex;
@@ -166,7 +166,7 @@ body {
   box-shadow: 0 2px 8px rgba(18, 18, 31, 0.08);
 }
 
-/* Form sections */
+/* Sections */
 .form-section {
   display: none;
 }
@@ -311,7 +311,7 @@ body {
   color: var(--muted);
 }
 
-/* ── Panel derecho (mockup) ── */
+/* ── Panel derecho ── */
 .login-right-panel {
   width: 340px;
   background: var(--dark);
@@ -388,7 +388,7 @@ body {
   height: 40px;
   border-radius: 10px;
   background: rgba(139, 33, 49, 0.15);
-  color: #fff; 
+  color: #fff;
   flex-shrink: 0;
 }
 

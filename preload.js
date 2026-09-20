@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 // ============================================
-// PUENTE SEGURO (Context Bridge)
+// CONTEXT BRIDGE
 // ============================================
 
 contextBridge.exposeInMainWorld("api", {

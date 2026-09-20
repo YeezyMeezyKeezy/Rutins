@@ -1,20 +1,16 @@
 // ============================================
-// DATABASE MODULE - db.js
-// ============================================
-// Módulo para gestionar todas las operaciones
-// con SQLite en Rutins
+// DATABASE MODULE
 // ============================================
 
 const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
+const { seedDatabase } = require("./seed");
 
 // ============================================
 // CONFIGURACIÓN
 // ============================================
 
-// En desarrollo: carpeta del proyecto
-// En producción: carpeta de datos del usuario
 const isDev = require("electron-is-dev");
 const dbDir = isDev
   ? path.join(__dirname, "data")
@@ -44,17 +40,20 @@ function initializeDatabase() {
     db = new Database(dbPath);
 
     // Configurar SQLite
-    db.pragma("journal_mode = WAL"); // Modo de escritura más seguro
-    db.pragma("foreign_keys = ON"); // Activar restricciones de clave foránea
+    db.pragma("journal_mode = WAL");
+    db.pragma("foreign_keys = ON");
 
     console.log("✅ Conexión a SQLite establecida");
 
-    // Leer y ejecutar schema.sql
+    // Leer y ejecutar el schema.sql
     const schemaPath = path.join(__dirname, "schema.sql");
     const schema = fs.readFileSync(schemaPath, "utf-8");
 
     db.exec(schema);
     console.log("✅ Tablas de base de datos creadas/verificadas");
+
+    seedDatabase(db);
+    console.log("✅ Datos iniciales verificados");
 
     return true;
   } catch (error) {
@@ -91,8 +90,8 @@ function closeDatabase() {
 
 /**
  * Ejecuta un INSERT y retorna el ID generado
- * @param {string} table - Nombre de la tabla
- * @param {object} data - Objeto con los datos a insertar
+ * @param {string} table  Nombre de la tabla
+ * @param {object} data  Objeto con los datos a insertar
  * @returns {number} ID de la fila insertada
  */
 function insert(table, data) {
@@ -110,8 +109,8 @@ function insert(table, data) {
 
 /**
  * Obtiene una fila de la base de datos
- * @param {string} query - Consulta SQL
- * @param {array} params - Parámetros para la consulta
+ * @param {string} query  Consulta SQL
+ * @param {array} params  Parámetros para la consulta
  * @returns {object} Fila encontrada o undefined
  */
 function selectOne(query, params = []) {
@@ -121,8 +120,8 @@ function selectOne(query, params = []) {
 
 /**
  * Obtiene múltiples filas de la base de datos
- * @param {string} query - Consulta SQL
- * @param {array} params - Parámetros para la consulta
+ * @param {string} query  Consulta SQL
+ * @param {array} params  Parámetros para la consulta
  * @returns {array} Array de filas
  */
 function selectAll(query, params = []) {
@@ -132,8 +131,8 @@ function selectAll(query, params = []) {
 
 /**
  * Actualiza filas en la base de datos
- * @param {string} query - Consulta UPDATE
- * @param {array} params - Parámetros para la consulta
+ * @param {string} query  Consulta UPDATE
+ * @param {array} params  Parámetros para la consulta
  * @returns {number} Número de filas actualizadas
  */
 function update(query, params = []) {
@@ -144,8 +143,8 @@ function update(query, params = []) {
 
 /**
  * Elimina filas de la base de datos
- * @param {string} query - Consulta DELETE
- * @param {array} params - Parámetros para la consulta
+ * @param {string} query  Consulta DELETE
+ * @param {array} params  Parámetros para la consulta
  * @returns {number} Número de filas eliminadas
  */
 function deleteRows(query, params = []) {
@@ -155,7 +154,6 @@ function deleteRows(query, params = []) {
 }
 
 /**
- * Ejecuta una transacción
  * @param {function} callback - Función que ejecuta las operaciones
  */
 function transaction(callback) {

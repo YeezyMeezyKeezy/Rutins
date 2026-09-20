@@ -24,7 +24,6 @@ function createWindow() {
       contextIsolation: true,
       enableRemoteModule: false,
     },
-    /*icon: path.join(__dirname, 'assets/icon.png')*/
   });
 
   mainWindow.loadFile(path.join(__dirname, "src/views/login.html"));

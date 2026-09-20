@@ -39,8 +39,7 @@ body {
   height: 100vh;
 }
 
-/* Sidebar (igual que dashboard) */
-/* ========== SIDEBAR (igual en todas las pantallas) ========== */
+/* Sidebar */
 
 .sidebar {
   width: var(--sidebar-w);
@@ -282,7 +281,7 @@ a.nav-item.active {
   overflow-y: auto;
 }
 
-/* Routine rows (mismo estilo que dashboard) */
+/* Rutinas */
 .routine-row {
   background: white;
   border-radius: 12px;
@@ -718,7 +717,7 @@ a.nav-item.active {
   display: block;
 }
 
-/* Enlaces del menú = mismo aspecto que .nav-item */
+/* Enlaces del menú */
 a.nav-item {
   display: flex;
   align-items: center;

@@ -55,7 +55,7 @@ function importar(payload) {
       [usuario.email_usuario],
     );
 
-    // CASCADE borra rutinas, actividades, ejecuciones y progreso
+    // CASCADE borra rutinas actividades ejecuciones y progreso
     if (existente) {
       db.deleteRows("DELETE FROM usuario WHERE id_usuario = ?", [
         existente.id_usuario,
