@@ -5,7 +5,6 @@
 const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
-const { seedDatabase } = require("./seed");
 
 // ============================================
 // CONFIGURACIÓN
@@ -51,9 +50,6 @@ function initializeDatabase() {
 
     db.exec(schema);
     console.log("✅ Tablas de base de datos creadas/verificadas");
-
-    seedDatabase(db);
-    console.log("✅ Datos iniciales verificados");
 
     return true;
   } catch (error) {
