@@ -1,10 +1,23 @@
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const path = require("path");
 const isDev = require("electron-is-dev");
-const db = require("./src/database/db");
+
+require("dotenv").config();
+const { supabase } = require("./src/database/supabase");
 
 // Importar todos los handlers
 require("./ipcHandlers");
+
+async function probarSupabase() {
+  const { data, error } = await supabase.from("tiporutina").select("*");
+  if (error) {
+    console.error("Supabase error:", error.message);
+    return;
+  }
+  console.log("Supabase OK. Tipos:", data);
+}
+
+probarSupabase();
 
 let mainWindow;
 
@@ -42,7 +55,6 @@ function createWindow() {
 // ============================================
 
 app.on("ready", () => {
-  db.initializeDatabase();
   createWindow();
   createMenu();
 });
@@ -57,10 +69,6 @@ app.on("activate", () => {
   if (mainWindow === null) {
     createWindow();
   }
-});
-
-app.on("quit", () => {
-  db.closeDatabase();
 });
 
 // ============================================

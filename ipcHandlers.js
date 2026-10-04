@@ -2,30 +2,21 @@ const { ipcMain, dialog, BrowserWindow } = require("electron");
 const fs = require("fs");
 
 const usuarioService = require("./src/services/usuarioService");
-const rutinaService = require("./src/services/rutinaService");
-const actividadService = require("./src/services/actividadService");
-const ejecucionService = require("./src/services/ejecucionService");
-const progresoService = require("./src/services/progresoService");
-const cuentaService = require("./src/services/cuentaService");
+const rutinaService = require("./src/services/rutinaCloudService");
+const actividadService = require("./src/services/actividadCloudService");
+const ejecucionService = require("./src/services/ejecucionCloudService");
+const progresoService = require("./src/services/progresoCloudService");
 const reporteService = require("./src/services/reporteService");
+const cuentaService = require("./src/services/cuentaService");
+const authService = require("./src/services/authService");
 
 // ============================================
 // USUARIO
 // ============================================
 
-ipcMain.handle("usuario:crear", async (event, datos) => {
-  try {
-    const id = usuarioService.crear(datos);
-    return { success: true, id };
-  } catch (error) {
-    console.error("Error al crear usuario:", error);
-    return { success: false, error: error.message };
-  }
-});
-
 ipcMain.handle("usuario:obtener", async (event, id) => {
   try {
-    const usuario = usuarioService.obtener(id);
+    const usuario = await usuarioService.obtener(id);
     return { success: true, data: usuario };
   } catch (error) {
     console.error("Error al obtener usuario:", error);
@@ -33,19 +24,9 @@ ipcMain.handle("usuario:obtener", async (event, id) => {
   }
 });
 
-ipcMain.handle("usuario:obtenerPorEmail", async (event, email) => {
-  try {
-    const usuario = usuarioService.obtenerPorEmail(email);
-    return { success: true, data: usuario };
-  } catch (error) {
-    console.error("Error al obtener usuario por email:", error);
-    return { success: false, error: error.message };
-  }
-});
-
 ipcMain.handle("usuario:actualizar", async (event, id, datos) => {
   try {
-    const changes = usuarioService.actualizar(id, datos);
+    const changes = await usuarioService.actualizar(id, datos);
     return { success: true, changes };
   } catch (error) {
     console.error("Error al actualizar usuario:", error);
@@ -53,9 +34,9 @@ ipcMain.handle("usuario:actualizar", async (event, id, datos) => {
   }
 });
 
-ipcMain.handle("usuario:eliminar", async (event, id) => {
+ipcMain.handle("usuario:eliminar", async () => {
   try {
-    return usuarioService.eliminar(id);
+    return await usuarioService.eliminar();
   } catch (error) {
     console.error("Error en usuario:eliminar:", error);
     return { success: false, error: error.message };
@@ -68,7 +49,7 @@ ipcMain.handle("usuario:eliminar", async (event, id) => {
 
 ipcMain.handle("tiporutina:obtenerTodas", async () => {
   try {
-    const tipos = rutinaService.obtenerTipos();
+    const tipos = await rutinaService.obtenerTipos();
     return { success: true, data: tipos };
   } catch (error) {
     console.error("Error al obtener tipos de rutina:", error);
@@ -82,7 +63,7 @@ ipcMain.handle("tiporutina:obtenerTodas", async () => {
 
 ipcMain.handle("rutina:crear", async (event, datos) => {
   try {
-    const id = rutinaService.crear(datos);
+    const id = await rutinaService.crear(datos);
     return { success: true, id };
   } catch (error) {
     console.error("Error al crear rutina:", error);
@@ -92,7 +73,7 @@ ipcMain.handle("rutina:crear", async (event, datos) => {
 
 ipcMain.handle("rutina:obtenerTodas", async (event, idUsuario) => {
   try {
-    const rutinas = rutinaService.obtenerTodas(idUsuario);
+    const rutinas = await rutinaService.obtenerTodas(idUsuario);
     return { success: true, data: rutinas };
   } catch (error) {
     console.error("Error al obtener rutinas:", error);
@@ -102,7 +83,7 @@ ipcMain.handle("rutina:obtenerTodas", async (event, idUsuario) => {
 
 ipcMain.handle("rutina:obtener", async (event, id) => {
   try {
-    const rutina = rutinaService.obtener(id);
+    const rutina = await rutinaService.obtener(id);
     return { success: true, data: rutina };
   } catch (error) {
     console.error("Error al obtener rutina:", error);
@@ -112,7 +93,7 @@ ipcMain.handle("rutina:obtener", async (event, id) => {
 
 ipcMain.handle("rutina:actualizar", async (event, id, datos) => {
   try {
-    const changes = rutinaService.actualizar(id, datos);
+    const changes = await rutinaService.actualizar(id, datos);
     return { success: true, changes };
   } catch (error) {
     console.error("Error al actualizar rutina:", error);
@@ -122,7 +103,7 @@ ipcMain.handle("rutina:actualizar", async (event, id, datos) => {
 
 ipcMain.handle("rutina:eliminar", async (event, id) => {
   try {
-    const changes = rutinaService.eliminar(id);
+    const changes = await rutinaService.eliminar(id);
     return { success: true, changes };
   } catch (error) {
     console.error("Error al eliminar rutina:", error);
@@ -136,7 +117,7 @@ ipcMain.handle("rutina:eliminar", async (event, id) => {
 
 ipcMain.handle("actividad:crear", async (event, datos) => {
   try {
-    const id = actividadService.crear(datos);
+    const id = await actividadService.crear(datos);
     return { success: true, id };
   } catch (error) {
     console.error("Error al crear actividad:", error);
@@ -146,7 +127,7 @@ ipcMain.handle("actividad:crear", async (event, datos) => {
 
 ipcMain.handle("actividad:obtenerPorRutina", async (event, idRutina) => {
   try {
-    const actividades = actividadService.obtenerPorRutina(idRutina);
+    const actividades = await actividadService.obtenerPorRutina(idRutina);
     return { success: true, data: actividades };
   } catch (error) {
     console.error("Error al obtener actividades:", error);
@@ -156,7 +137,7 @@ ipcMain.handle("actividad:obtenerPorRutina", async (event, idRutina) => {
 
 ipcMain.handle("actividad:actualizar", async (event, id, datos) => {
   try {
-    const changes = actividadService.actualizar(id, datos);
+    const changes = await actividadService.actualizar(id, datos);
     return { success: true, changes };
   } catch (error) {
     console.error("Error al actualizar actividad:", error);
@@ -166,7 +147,7 @@ ipcMain.handle("actividad:actualizar", async (event, id, datos) => {
 
 ipcMain.handle("actividad:eliminar", async (event, id) => {
   try {
-    const changes = actividadService.eliminar(id);
+    const changes = await actividadService.eliminar(id);
     return { success: true, changes };
   } catch (error) {
     console.error("Error al eliminar actividad:", error);
@@ -180,7 +161,7 @@ ipcMain.handle("actividad:eliminar", async (event, id) => {
 
 ipcMain.handle("ejecucion:crear", async (event, datos) => {
   try {
-    const id = ejecucionService.crear(datos);
+    const id = await ejecucionService.crear(datos);
     return { success: true, id };
   } catch (error) {
     console.error("Error al crear ejecución:", error);
@@ -190,7 +171,7 @@ ipcMain.handle("ejecucion:crear", async (event, datos) => {
 
 ipcMain.handle("ejecucion:obtenerPorFecha", async (event, idUsuario, fecha) => {
   try {
-    const ejecuciones = ejecucionService.obtenerPorFecha(idUsuario, fecha);
+    const ejecuciones = await ejecucionService.obtenerPorFecha(idUsuario, fecha);
     return { success: true, data: ejecuciones };
   } catch (error) {
     console.error("Error al obtener ejecuciones por fecha:", error);
@@ -200,7 +181,7 @@ ipcMain.handle("ejecucion:obtenerPorFecha", async (event, idUsuario, fecha) => {
 
 ipcMain.handle("ejecucion:obtenerPorRutina", async (event, idRutina) => {
   try {
-    const ejecuciones = ejecucionService.obtenerPorRutina(idRutina);
+    const ejecuciones = await ejecucionService.obtenerPorRutina(idRutina);
     return { success: true, data: ejecuciones };
   } catch (error) {
     console.error("Error al obtener ejecuciones por rutina:", error);
@@ -208,22 +189,19 @@ ipcMain.handle("ejecucion:obtenerPorRutina", async (event, idRutina) => {
   }
 });
 
-ipcMain.handle(
-  "ejecucion:obtenerUltimas",
-  async (event, idUsuario, dias = 30) => {
-    try {
-      const ejecuciones = ejecucionService.obtenerUltimas(idUsuario, dias);
-      return { success: true, data: ejecuciones };
-    } catch (error) {
-      console.error("Error al obtener últimas ejecuciones:", error);
-      return { success: false, error: error.message };
-    }
-  },
-);
+ipcMain.handle("ejecucion:obtenerUltimas", async (event, idUsuario, dias = 30) => {
+  try {
+    const ejecuciones = await ejecucionService.obtenerUltimas(idUsuario, dias);
+    return { success: true, data: ejecuciones };
+  } catch (error) {
+    console.error("Error al obtener últimas ejecuciones:", error);
+    return { success: false, error: error.message };
+  }
+});
 
 ipcMain.handle("ejecucion:actualizar", async (event, id, datos) => {
   try {
-    const changes = ejecucionService.actualizar(id, datos);
+    const changes = await ejecucionService.actualizar(id, datos);
     return { success: true, changes };
   } catch (error) {
     console.error("Error al actualizar ejecución:", error);
@@ -237,7 +215,7 @@ ipcMain.handle("ejecucion:actualizar", async (event, id, datos) => {
 
 ipcMain.handle("progreso:obtener", async (event, idUsuario) => {
   try {
-    const progreso = progresoService.obtener(idUsuario);
+    const progreso = await progresoService.obtener(idUsuario);
     return { success: true, data: progreso };
   } catch (error) {
     console.error("Error al obtener progreso:", error);
@@ -247,8 +225,8 @@ ipcMain.handle("progreso:obtener", async (event, idUsuario) => {
 
 ipcMain.handle("progreso:crearOActualizar", async (event, idUsuario, datos) => {
   try {
-    const result = progresoService.crearOActualizar(idUsuario, datos);
-    return { success: true, ...result };
+    const result = await progresoService.crearOActualizar(idUsuario, datos);
+    return { success: true, data: result };
   } catch (error) {
     console.error("Error al crear/actualizar progreso:", error);
     return { success: false, error: error.message };
@@ -257,7 +235,7 @@ ipcMain.handle("progreso:crearOActualizar", async (event, idUsuario, datos) => {
 
 ipcMain.handle("progreso:actualizar", async (event, idUsuario, datos) => {
   try {
-    const changes = progresoService.actualizar(idUsuario, datos);
+    const changes = await progresoService.actualizar(idUsuario, datos);
     return { success: true, changes };
   } catch (error) {
     console.error("Error al actualizar progreso:", error);
@@ -271,12 +249,12 @@ ipcMain.handle("progreso:actualizar", async (event, idUsuario, datos) => {
 
 ipcMain.handle("cuenta:exportar", async (event, idUsuario) => {
   try {
-    const payload = cuentaService.exportar(idUsuario);
+    const payload = await cuentaService.exportar(idUsuario);
     const win = BrowserWindow.fromWebContents(event.sender);
 
     const { canceled, filePath } = await dialog.showSaveDialog(win, {
-      title: "Exportar cuenta Rutins",
-      defaultPath: "cuenta-rutins.json",
+      title: "Exportar rutinas",
+      defaultPath: "rutinas-rutins.json",
       filters: [{ name: "JSON", extensions: ["json"] }],
     });
 
@@ -287,7 +265,7 @@ ipcMain.handle("cuenta:exportar", async (event, idUsuario) => {
     fs.writeFileSync(filePath, JSON.stringify(payload, null, 2), "utf-8");
     return { success: true, filePath };
   } catch (error) {
-    console.error("Error exportando cuenta:", error);
+    console.error("Error exportando rutinas:", error);
     return { success: false, error: error.message };
   }
 });
@@ -297,7 +275,7 @@ ipcMain.handle("cuenta:importar", async (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
 
     const { canceled, filePaths } = await dialog.showOpenDialog(win, {
-      title: "Importar cuenta Rutins",
+      title: "Importar rutinas Rutins",
       filters: [{ name: "JSON", extensions: ["json"] }],
       properties: ["openFile"],
     });
@@ -307,7 +285,7 @@ ipcMain.handle("cuenta:importar", async (event) => {
     }
 
     const payload = JSON.parse(fs.readFileSync(filePaths[0], "utf-8"));
-    return cuentaService.importar(payload);
+    return await cuentaService.importar(payload);
   } catch (error) {
     console.error("Error importando cuenta:", error);
     return { success: false, error: error.message };
@@ -320,7 +298,7 @@ ipcMain.handle("cuenta:importar", async (event) => {
 
 ipcMain.handle("reporte:generar", async (event, idUsuario) => {
   try {
-    const data = reporteService.construir(idUsuario);
+    const data = await reporteService.construir(idUsuario);
     const html = reporteService.html(data);
     const win = BrowserWindow.fromWebContents(event.sender);
 
@@ -347,6 +325,66 @@ ipcMain.handle("reporte:generar", async (event, idUsuario) => {
     return { success: true, filePath };
   } catch (error) {
     console.error("Error generando reporte:", error);
+    return { success: false, error: error.message };
+  }
+});
+
+// ============================================
+// AUTENTICACIÓN
+// ============================================
+
+ipcMain.handle("auth:registrar", async (event, datos) => {
+  try {
+    return await authService.registrar(datos);
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("auth:iniciar", async (event, datos) => {
+  try {
+    return await authService.iniciar(datos);
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("auth:cerrar", async () => {
+  try {
+    return await authService.cerrar();
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("auth:recuperar", async (event, datos) => {
+  try {
+    return await authService.recuperar(datos);
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("auth:restaurar", async (event, tokens) => {
+  try {
+    return await authService.restaurar(tokens.access_token, tokens.refresh_token);
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("auth:actualizarNombre", async (event, nombre) => {
+  try {
+    return await authService.actualizarNombre(nombre);
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("auth:cambiarClave", async (event, clave) => {
+  try {
+    return await authService.cambiarClave(clave);
+  } catch (error) {
     return { success: false, error: error.message };
   }
 });

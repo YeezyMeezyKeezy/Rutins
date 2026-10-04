@@ -17,6 +17,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   const user = JSON.parse(raw);
   currentUserId = user.id_usuario;
 
+  if (user.access_token && user.refresh_token) {
+    await window.api.auth.restaurar({
+      access_token: user.access_token,
+      refresh_token: user.refresh_token,
+    });
+  }
+
   const firstName = user.nombre_usuario.split(" ")[0];
   const userAvatar = document.getElementById("user-avatar");
   const userName = document.getElementById("user-name");

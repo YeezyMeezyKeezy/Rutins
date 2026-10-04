@@ -137,4 +137,18 @@ contextBridge.exposeInMainWorld("api", {
     generar: async (idUsuario) =>
       ipcRenderer.invoke("reporte:generar", idUsuario),
   },
+
+  //============================================
+  // AUTENTICACIÓN
+  // ============================================
+
+  auth: {
+    registrar: async (datos) => ipcRenderer.invoke("auth:registrar", datos),
+    iniciar: async (datos) => ipcRenderer.invoke("auth:iniciar", datos),
+    cerrar: async () => ipcRenderer.invoke("auth:cerrar"),
+    recuperar: async (datos) => ipcRenderer.invoke("auth:recuperar", datos),
+    restaurar: async (tokens) => ipcRenderer.invoke("auth:restaurar", tokens),
+    actualizarNombre: async (nombre) => ipcRenderer.invoke("auth:actualizarNombre", nombre),
+cambiarClave: async (clave) => ipcRenderer.invoke("auth:cambiarClave", clave),
+  },
 });

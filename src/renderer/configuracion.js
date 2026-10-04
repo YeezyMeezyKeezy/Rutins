@@ -12,6 +12,25 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   currentUser = JSON.parse(raw);
 
+  if (!currentUser.access_token || !currentUser.refresh_token) {
+    localStorage.removeItem("currentUser");
+    sessionStorage.removeItem("currentUser");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const sesion = await window.api.auth.restaurar({
+    access_token: currentUser.access_token,
+    refresh_token: currentUser.refresh_token,
+  });
+
+  if (!sesion.success) {
+    localStorage.removeItem("currentUser");
+    sessionStorage.removeItem("currentUser");
+    window.location.href = "login.html";
+    return;
+  }
+
   initializeSettings();
   await updateRoutinesBadge(currentUser.id_usuario);
 });
@@ -63,9 +82,7 @@ async function saveProfile() {
     return;
   }
 
-  const result = await window.api.usuario.actualizar(currentUser.id_usuario, {
-    nombre_usuario: newName,
-  });
+  const result = await window.api.auth.actualizarNombre(newName);
 
   if (result.success) {
     currentUser.nombre_usuario = newName;
@@ -101,9 +118,7 @@ async function changePassword() {
     return;
   }
 
-  const result = await window.api.usuario.actualizar(currentUser.id_usuario, {
-    clave_usuario: newPassword,
-  });
+  const result = await window.api.auth.cambiarClave(newPassword);
 
   if (result.success) {
     showMessage("security-message", "✓ Contraseña cambiada", "success");
@@ -179,12 +194,12 @@ async function deleteAccountConfirm() {
   }
 }
 
-function logout() {
-  if (confirm("¿Seguro que deseas cerrar sesión?")) {
-    localStorage.removeItem("currentUser");
-    sessionStorage.removeItem("currentUser");
-    window.location.href = "login.html";
-  }
+async function logout() {
+  if (!confirm("¿Cerrar sesión?")) return;
+  await window.api.auth.cerrar();
+  localStorage.removeItem("currentUser");
+  sessionStorage.removeItem("currentUser");
+  window.location.href = "login.html";
 }
 
 function showMessage(id, text, type) {

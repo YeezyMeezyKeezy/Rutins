@@ -1,67 +1,56 @@
-const db = require("../database/db");
+const { supabase } = require("../database/supabase");
 
-function crear(datos) {
-  return db.insert("usuario", {
-    nombre_usuario: datos.nombre_usuario,
-    email_usuario: datos.email_usuario,
-    clave_usuario: datos.clave_usuario,
-    fecharegisto_usuario: new Date().toISOString(),
-    fechaultimoacceso_usuario: new Date().toISOString(),
+async function obtener(id) {
+  const { data, error } = await supabase
+    .from("perfil")
+    .select("*")
+    .eq("id_usuario", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+async function actualizar(id, datos) {
+  const patch = {};
+  if (datos.nombre_usuario !== undefined) patch.nombre_usuario = datos.nombre_usuario;
+  if (datos.email_usuario !== undefined) patch.email_usuario = datos.email_usuario;
+
+  if (datos.clave_usuario) {
+    const { error } = await supabase.auth.updateUser({
+      password: datos.clave_usuario,
+    });
+    if (error) throw new Error(error.message);
+  }
+
+  if (!Object.keys(patch).length) return 1;
+
+  const { error } = await supabase.from("perfil").update(patch).eq("id_usuario", id);
+  if (error) throw new Error(error.message);
+  return 1;
+}
+
+async function eliminar() {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData?.session?.access_token;
+  if (!accessToken) {
+    return { success: false, error: "No hay sesión para borrar la cuenta" };
+  }
+
+  const { data, error } = await supabase.functions.invoke("delete-account", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: {},
   });
-}
 
-function obtener(id) {
-  return db.selectOne("SELECT * FROM usuario WHERE id_usuario = ?", [id]);
-}
-
-function obtenerPorEmail(email) {
-  return db.selectOne("SELECT * FROM usuario WHERE email_usuario = ?", [email]);
-}
-
-function actualizar(id, datos) {
-  const updates = [];
-  const values = [];
-
-  if (datos.nombre_usuario !== undefined) {
-    updates.push("nombre_usuario = ?");
-    values.push(datos.nombre_usuario);
+  if (error) {
+    return { success: false, error: error.message || "No se pudo borrar la cuenta" };
   }
-  if (datos.email_usuario !== undefined) {
-    updates.push("email_usuario = ?");
-    values.push(datos.email_usuario);
-  }
-  if (datos.clave_usuario !== undefined) {
-    updates.push("clave_usuario = ?");
-    values.push(datos.clave_usuario);
+  if (!data?.success) {
+    return { success: false, error: data?.error || "No se pudo borrar la cuenta" };
   }
 
-  updates.push("fechaultimoacceso_usuario = ?");
-  values.push(new Date().toISOString());
-  values.push(id);
-
-  if (updates.length === 1) {
-  }
-
-  const query = `UPDATE usuario SET ${updates.join(", ")} WHERE id_usuario = ?`;
-  return db.update(query, values);
-}
-
-function eliminar(id) {
-  const changes = db.deleteRows("DELETE FROM usuario WHERE id_usuario = ?", [
-    id,
-  ]);
-
-  if (changes === 0) {
-    return { success: false, error: "Usuario no encontrado" };
-  }
-
+  await supabase.auth.signOut().catch(() => {});
   return { success: true };
 }
 
-module.exports = {
-  crear,
-  obtener,
-  obtenerPorEmail,
-  actualizar,
-  eliminar,
-};
+module.exports = { obtener, actualizar, eliminar };

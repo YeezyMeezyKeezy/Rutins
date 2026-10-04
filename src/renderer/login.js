@@ -62,6 +62,8 @@ function saveSession(user, remember) {
     id_usuario: user.id_usuario,
     nombre_usuario: user.nombre_usuario,
     email_usuario: user.email_usuario,
+    access_token: user.access_token || null,
+    refresh_token: user.refresh_token || null,
   });
   localStorage.removeItem("currentUser");
   sessionStorage.removeItem("currentUser");
@@ -106,17 +108,17 @@ async function handleLogin(event) {
   showLoading("login", true);
 
   try {
-    const result = await window.api.usuario.obtenerPorEmail(email);
+    const result = await window.api.auth.iniciar({
+      email_usuario: email,
+      clave_usuario: password,
+    });
 
     if (!result.success || !result.data) {
-      showMessage("login", "Email o contraseña incorrectos", "error");
-      clearPasswordField();
-      showLoading("login", false);
-      return;
-    }
-
-    if (result.data.clave_usuario !== password) {
-      showMessage("login", "Email o contraseña incorrectos", "error");
+      showMessage(
+        "login",
+        result.error || "Email o contraseña incorrectos",
+        "error",
+      );
       clearPasswordField();
       showLoading("login", false);
       return;
@@ -173,21 +175,13 @@ async function handleRegister(event) {
   showLoading("register", true);
 
   try {
-    const existingUser = await window.api.usuario.obtenerPorEmail(email);
-
-    if (existingUser.success && existingUser.data) {
-      showMessage("register", "Este email ya está registrado", "error");
-      showLoading("register", false);
-      return;
-    }
-
-    const result = await window.api.usuario.crear({
+    const result = await window.api.auth.registrar({
       nombre_usuario: nombre,
       email_usuario: email,
       clave_usuario: password,
     });
 
-    if (!result.success) {
+    if (!result.success || !result.data) {
       showMessage(
         "register",
         result.error || "Error al crear la cuenta",
@@ -197,20 +191,8 @@ async function handleRegister(event) {
       return;
     }
 
-    const created = await window.api.usuario.obtenerPorEmail(email);
-    if (!created.success || !created.data) {
-      showMessage(
-        "register",
-        "Cuenta creada. Inicia sesión manualmente.",
-        "success",
-      );
-      showLoading("register", false);
-      switchTab("login");
-      return;
-    }
-
     const remember = document.getElementById("remember-me")?.checked ?? true;
-    saveSession(created.data, remember);
+    saveSession(result.data, remember);
 
     showMessage(
       "register",
@@ -233,47 +215,32 @@ async function handleRegister(event) {
 }
 
 // ============================================
-// RECUPERAR CONTRASEÑA (local)
+// RECUPERAR CONTRASEÑA (correo de Supabase)
 // ============================================
 
 async function handleForgot(event) {
   event.preventDefault();
   const email = document.getElementById("forgot-email").value.trim();
-  const pass = document.getElementById("forgot-password").value;
-  const confirm = document.getElementById("forgot-password-confirm").value;
 
-  if (!email || !pass || !confirm) {
-    showMessage("forgot", "Completa todos los campos", "error");
-    return;
-  }
-  if (pass !== confirm) {
-    showMessage("forgot", "Las contraseñas no coinciden", "error");
-    return;
-  }
-  if (pass.length < 6) {
-    showMessage("forgot", "Mínimo 6 caracteres", "error");
+  if (!email) {
+    showMessage("forgot", "Escribe el email de la cuenta", "error");
     return;
   }
 
-  const found = await window.api.usuario.obtenerPorEmail(email);
-  if (!found.success || !found.data) {
-    showMessage("forgot", "No hay una cuenta con ese email", "error");
-    return;
-  }
-
-  const upd = await window.api.usuario.actualizar(found.data.id_usuario, {
-    clave_usuario: pass,
-  });
-
-  if (upd.success) {
+  try {
+    const result = await window.api.auth.recuperar({ email_usuario: email });
+    if (!result.success) {
+      showMessage("forgot", result.error || "No se pudo enviar el correo", "error");
+      return;
+    }
     showMessage(
       "forgot",
-      "Contraseña actualizada. Ya puedes entrar.",
+      "Si el email existe, Supabase envió el enlace para cambiar la contraseña.",
       "success",
     );
-    switchTab("login");
-  } else {
-    showMessage("forgot", "No se pudo actualizar", "error");
+  } catch (error) {
+    console.error("Error recuperando contraseña:", error);
+    showMessage("forgot", "No se pudo enviar el correo", "error");
   }
 }
 

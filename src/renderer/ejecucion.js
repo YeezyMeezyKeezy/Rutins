@@ -24,6 +24,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   const user = JSON.parse(raw);
   userId = user.id_usuario;
 
+  if (user.access_token && user.refresh_token) {
+    await window.api.auth.restaurar({
+      access_token: user.access_token,
+      refresh_token: user.refresh_token,
+    });
+  }
+
   routineId =
     new URLSearchParams(window.location.search).get("id") ||
     sessionStorage.getItem("activeRoutineId");

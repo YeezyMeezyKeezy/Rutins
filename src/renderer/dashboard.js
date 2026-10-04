@@ -10,6 +10,13 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   const user = JSON.parse(raw);
 
+  if (user.access_token && user.refresh_token) {
+    await window.api.auth.restaurar({
+      access_token: user.access_token,
+      refresh_token: user.refresh_token,
+    });
+  }
+
   initializeDashboard(user);
   await loadDashboardData(user);
 
