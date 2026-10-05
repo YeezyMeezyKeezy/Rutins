@@ -49,7 +49,8 @@ class Auth {
     }
 
     const user = data.user;
-    const nombre = user.user_metadata?.nombre_usuario || user.email.split("@")[0];
+    const nombre =
+      user.user_metadata?.nombre_usuario || user.email.split("@")[0];
 
     return {
       success: true,
@@ -103,7 +104,9 @@ class Auth {
   }
 
   async cambiarClave(clave_usuario) {
-    const { error } = await supabase.auth.updateUser({ password: clave_usuario });
+    const { error } = await supabase.auth.updateUser({
+      password: clave_usuario,
+    });
     if (error) return { success: false, error: error.message };
     return { success: true };
   }

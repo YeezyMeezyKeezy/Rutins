@@ -70,7 +70,10 @@ class Rutina {
   }
 
   async eliminar(id) {
-    const { error } = await supabase.from("rutina").delete().eq("id_rutina", id);
+    const { error } = await supabase
+      .from("rutina")
+      .delete()
+      .eq("id_rutina", id);
     if (error) throw new Error(error.message);
     return 1;
   }

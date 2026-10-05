@@ -13,8 +13,10 @@ class Usuario {
 
   async actualizar(id, datos) {
     const patch = {};
-    if (datos.nombre_usuario !== undefined) patch.nombre_usuario = datos.nombre_usuario;
-    if (datos.email_usuario !== undefined) patch.email_usuario = datos.email_usuario;
+    if (datos.nombre_usuario !== undefined)
+      patch.nombre_usuario = datos.nombre_usuario;
+    if (datos.email_usuario !== undefined)
+      patch.email_usuario = datos.email_usuario;
 
     if (datos.clave_usuario) {
       const { error } = await supabase.auth.updateUser({
@@ -25,7 +27,10 @@ class Usuario {
 
     if (!Object.keys(patch).length) return 1;
 
-    const { error } = await supabase.from("perfil").update(patch).eq("id_usuario", id);
+    const { error } = await supabase
+      .from("perfil")
+      .update(patch)
+      .eq("id_usuario", id);
     if (error) throw new Error(error.message);
     return 1;
   }
@@ -44,10 +49,16 @@ class Usuario {
     });
 
     if (error) {
-      return { success: false, error: error.message || "No se pudo borrar la cuenta" };
+      return {
+        success: false,
+        error: error.message || "No se pudo borrar la cuenta",
+      };
     }
     if (!data?.success) {
-      return { success: false, error: data?.error || "No se pudo borrar la cuenta" };
+      return {
+        success: false,
+        error: data?.error || "No se pudo borrar la cuenta",
+      };
     }
 
     await supabase.auth.signOut().catch(() => {});

@@ -21,9 +21,14 @@ class Cuenta {
   async importar(payload) {
     const { data: auth } = await supabase.auth.getUser();
     const idUsuario = auth.user?.id;
-    if (!idUsuario) return { success: false, error: "No hay sesión en Supabase" };
+    if (!idUsuario)
+      return { success: false, error: "No hay sesión en Supabase" };
 
-    if (!payload || payload.app !== "Rutins" || !Array.isArray(payload.rutinas)) {
+    if (
+      !payload ||
+      payload.app !== "Rutins" ||
+      !Array.isArray(payload.rutinas)
+    ) {
       return { success: false, error: "Archivo no válido de rutinas" };
     }
 

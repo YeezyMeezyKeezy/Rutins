@@ -13,7 +13,8 @@ class Ejecucion {
         id_usuario: idUsuario,
         fecha_ejecucion: datos.fecha_ejecucion || new Date().toISOString(),
         completada_ejecucion:
-          datos.completada_ejecucion === 1 || datos.completada_ejecucion === true,
+          datos.completada_ejecucion === 1 ||
+          datos.completada_ejecucion === true,
         tiempo_total: datos.tiempo_total ?? 0,
       })
       .select("id_ejecucion")
@@ -82,7 +83,8 @@ class Ejecucion {
       patch.completada_ejecucion =
         datos.completada_ejecucion === 1 || datos.completada_ejecucion === true;
     }
-    if (datos.tiempo_total !== undefined) patch.tiempo_total = datos.tiempo_total;
+    if (datos.tiempo_total !== undefined)
+      patch.tiempo_total = datos.tiempo_total;
     if (datos.fecha_ejecucion !== undefined) {
       patch.fecha_ejecucion = datos.fecha_ejecucion;
     }

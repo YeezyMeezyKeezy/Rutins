@@ -17,14 +17,18 @@ class Progreso {
     const completadas =
       (actual?.rutinascompletadas_progreso || 0) +
       (datos.rutinascompletadas_progreso || 0);
-    const racha = Math.max(actual?.racha_progreso || 0, datos.racha_progreso || 0);
+    const racha = Math.max(
+      actual?.racha_progreso || 0,
+      datos.racha_progreso || 0,
+    );
 
     const fila = {
       id_usuario: idUsuario,
       fecharegistro_progreso:
         datos.fecharegistro_progreso || new Date().toISOString().slice(0, 10),
       rutinascompletadas_progreso: completadas,
-      porcentaje_progreso: datos.porcentaje_progreso ?? actual?.porcentaje_progreso ?? 0,
+      porcentaje_progreso:
+        datos.porcentaje_progreso ?? actual?.porcentaje_progreso ?? 0,
       racha_progreso: racha,
     };
 

@@ -33,15 +33,18 @@ ipcMain.handle("ejecucion:obtenerPorRutina", async (event, idRutina) => {
   }
 });
 
-ipcMain.handle("ejecucion:obtenerUltimas", async (event, idUsuario, dias = 30) => {
-  try {
-    const data = await ejecucion.obtenerUltimas(idUsuario, dias);
-    return { success: true, data };
-  } catch (error) {
-    console.error("Error al obtener últimas ejecuciones:", error);
-    return { success: false, error: error.message };
-  }
-});
+ipcMain.handle(
+  "ejecucion:obtenerUltimas",
+  async (event, idUsuario, dias = 30) => {
+    try {
+      const data = await ejecucion.obtenerUltimas(idUsuario, dias);
+      return { success: true, data };
+    } catch (error) {
+      console.error("Error al obtener últimas ejecuciones:", error);
+      return { success: false, error: error.message };
+    }
+  },
+);
 
 ipcMain.handle("ejecucion:actualizar", async (event, id, datos) => {
   try {

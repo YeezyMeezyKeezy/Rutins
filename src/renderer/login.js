@@ -230,7 +230,11 @@ async function handleForgot(event) {
   try {
     const result = await window.api.auth.recuperar({ email_usuario: email });
     if (!result.success) {
-      showMessage("forgot", result.error || "No se pudo enviar el correo", "error");
+      showMessage(
+        "forgot",
+        result.error || "No se pudo enviar el correo",
+        "error",
+      );
       return;
     }
     showMessage(

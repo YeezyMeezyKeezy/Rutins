@@ -37,8 +37,13 @@ class Reporte {
     if (error) throw new Error(error.message);
     const rows = ejecuciones || [];
 
-    const dias = new Set(rows.map((e) => String(e.fecha_ejecucion).slice(0, 10)));
-    const tiempoTotal = rows.reduce((s, e) => s + (parseInt(e.tiempo_total, 10) || 0), 0);
+    const dias = new Set(
+      rows.map((e) => String(e.fecha_ejecucion).slice(0, 10)),
+    );
+    const tiempoTotal = rows.reduce(
+      (s, e) => s + (parseInt(e.tiempo_total, 10) || 0),
+      0,
+    );
 
     let ejercicios = 0;
     for (const e of rows) {
@@ -57,7 +62,9 @@ class Reporte {
 
     const semanas = [0, 0, 0, 0];
     rows.forEach((e) => {
-      const diff = Math.floor((new Date(e.fecha_ejecucion) - inicio) / 86400000);
+      const diff = Math.floor(
+        (new Date(e.fecha_ejecucion) - inicio) / 86400000,
+      );
       semanas[Math.min(3, Math.max(0, Math.floor(diff / 7)))]++;
     });
     const maxSem = Math.max(...semanas, 1);
