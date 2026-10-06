@@ -38,7 +38,6 @@ function initializeDashboard(user) {
         : "");
   }
 
-  // No pisar el icono hand del topbar
   const titleText = document.getElementById("topbar-title-text");
   if (titleText) {
     titleText.textContent = `Hola, ${firstName}`;
@@ -60,13 +59,48 @@ function initializeDashboard(user) {
   }
 }
 
+function fechaLocal() {
+  const d = new Date();
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const dia = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mes}-${dia}`;
+}
+
+function rutinasParaHoy(routines, ejecuciones) {
+  const inicio = new Date();
+  const dia = inicio.getDay();
+  inicio.setDate(inicio.getDate() - (dia === 0 ? 6 : dia - 1));
+  inicio.setHours(0, 0, 0, 0);
+
+  const cupo = {
+    Diaria: 7,
+    "3 veces/semana": 3,
+    "2 veces/semana": 2,
+    "1 vez/semana": 1,
+  };
+  const conteo = {};
+
+  for (const e of ejecuciones || []) {
+    if (e.completada_ejecucion !== 1) continue;
+    if (new Date(e.fecha_ejecucion) < inicio) continue;
+    conteo[e.id_rutina] = (conteo[e.id_rutina] || 0) + 1;
+  }
+
+  return (routines || []).filter((r) => {
+    if (!(r.activa === 1 || r.activa === true)) return false;
+    if (r.frecuencia_rutina === "Diaria") return true;
+    const limite = cupo[r.frecuencia_rutina] ?? 7;
+    return (conteo[r.id_rutina] || 0) < limite;
+  });
+}
+
 async function loadDashboardData(user) {
   try {
     const rutinasResult = await window.api.rutina.obtenerTodas(user.id_usuario);
 
-    // Ejecuciones de hoy
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const today = fechaLocal();
     let executionsToday = [];
+    let executionsWeek = [];
     try {
       const execResult = await window.api.ejecucion.obtenerPorFecha(
         user.id_usuario,
@@ -75,12 +109,21 @@ async function loadDashboardData(user) {
       if (execResult.success && execResult.data) {
         executionsToday = execResult.data;
       }
+      const weekResult = await window.api.ejecucion.obtenerUltimas(
+        user.id_usuario,
+        7,
+      );
+      if (weekResult.success && weekResult.data) {
+        executionsWeek = weekResult.data;
+      }
     } catch (e) {
-      console.warn("No se pudieron cargar ejecuciones de hoy:", e);
+      console.warn("No se pudieron cargar ejecuciones:", e);
     }
 
     if (rutinasResult.success && rutinasResult.data) {
       const routines = rutinasResult.data;
+      const deHoy = rutinasParaHoy(routines, executionsWeek);
+
       const statTotal = document.getElementById("stat-total");
       if (statTotal) statTotal.textContent = routines.length;
 
@@ -90,27 +133,21 @@ async function loadDashboardData(user) {
         badge.style.display = "inline";
       }
 
-      const active = routines.filter(
-        (r) => r.activa === 1 || r.activa === true,
-      );
       const completedIds = new Set(
         (executionsToday || [])
           .filter((e) => e.completada_ejecucion === 1)
           .map((e) => e.id_rutina),
       );
-
-      const pending = active.filter(
-        (r) => !completedIds.has(r.id_rutina),
-      ).length;
-      const done = Math.max(0, active.length - pending);
+      const pending = deHoy.filter((r) => !completedIds.has(r.id_rutina)).length;
+      const done = Math.max(0, deHoy.length - pending);
 
       const statToday = document.getElementById("stat-today");
       if (statToday) statToday.textContent = pending;
 
       const todaySubtitle = document.getElementById("today-subtitle");
       if (todaySubtitle) {
-        if (active.length === 0) {
-          todaySubtitle.textContent = "No tienes rutinas activas para hoy.";
+        if (deHoy.length === 0) {
+          todaySubtitle.textContent = "No tienes rutinas programadas para hoy.";
         } else if (pending === 0) {
           todaySubtitle.textContent =
             "Ya completaste todas las rutinas de hoy. ¡Buen trabajo!";
@@ -121,8 +158,7 @@ async function loadDashboardData(user) {
         }
       }
 
-      // Solo el listado del home (ya no usamos la sección interna)
-      renderRoutineRows("dashboard-routines", routines, executionsToday);
+      renderRoutineRows("dashboard-routines", deHoy, executionsToday);
     }
 
     const progresoResult = await window.api.progreso.obtener(user.id_usuario);
@@ -201,6 +237,7 @@ function renderRoutineRows(containerId, routines, executionsToday = []) {
         </div>
         <div class="routine-info">
           <div class="routine-name">${r.nombre_rutina}</div>
+          ${r.descripcion_rutina ? `<div class="routine-desc">${r.descripcion_rutina}</div>` : ""}
           <div class="routine-meta-row">
             <span class="routine-chip ${style.chip}">${r.nombre_tiporutina || "General"}</span>
             <span class="routine-freq">${r.frecuencia_rutina || "—"}${r.activa ? " · Activa" : " · Inactiva"}</span>
@@ -209,7 +246,7 @@ function renderRoutineRows(containerId, routines, executionsToday = []) {
         <span class="routine-status ${statusClass}">${statusText}</span>
         <div class="routine-actions">
           <button class="btn-start" onclick="event.stopPropagation(); startRoutine(${r.id_rutina})">
-            <span data-lucide="play"></span> Iniciar
+            <span data-lucide="${isDone ? "repeat" : "play"}"></span> ${isDone ? "Repetir" : "Iniciar"}
           </button>
         </div>
       </div>`;
@@ -235,7 +272,7 @@ function switchSection(sectionId, element) {
   const handIcon = document.querySelector(".topbar-title .title-icon");
 
   const titles = {
-    dashboard: null, //mantiene el saludo
+    dashboard: null,
     routines: "Mis Rutinas",
     progress: "Tu Progreso",
     settings: "Configuración",

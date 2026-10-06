@@ -172,6 +172,11 @@ async function handleRegister(event) {
     return;
   }
 
+  if (!/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?: [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$/.test(nombre)) {
+    showMessage("register", "El nombre solo puede tener letras", "error");
+    return;
+  }
+
   showLoading("register", true);
 
   try {

@@ -41,7 +41,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await loadRoutines(user.id_usuario);
 
-  // Llegada desde dashboard (editar / eliminar)
   const editId = sessionStorage.getItem("editRoutineId");
   if (editId) {
     sessionStorage.removeItem("editRoutineId");
@@ -64,9 +63,16 @@ window.addEventListener("DOMContentLoaded", async () => {
 async function loadRoutines(userId) {
   try {
     const result = await window.api.rutina.obtenerTodas(userId);
+    const hoy = fechaLocal();
+    const ejecuciones = await window.api.ejecucion.obtenerPorFecha(userId, hoy);
+    const completadasHoy = new Set(
+      (ejecuciones.success && ejecuciones.data ? ejecuciones.data : [])
+        .filter((e) => e.completada_ejecucion === 1)
+        .map((e) => e.id_rutina),
+    );
 
     if (result.success && result.data && result.data.length > 0) {
-      displayRoutines(result.data);
+      displayRoutines(result.data, completadasHoy);
       const badge = document.getElementById("routines-badge");
       if (badge) {
         badge.textContent = result.data.length;
@@ -78,6 +84,13 @@ async function loadRoutines(userId) {
   } catch (error) {
     console.error("Error cargando rutinas:", error);
   }
+}
+
+function fechaLocal() {
+  const d = new Date();
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const dia = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mes}-${dia}`;
 }
 
 function getTypeStyle(nombreTipo) {
@@ -98,7 +111,7 @@ function getTypeStyle(nombreTipo) {
   return { icon: "clipboard-list", chip: "", row: "", fill: "red" };
 }
 
-function displayRoutines(routines) {
+function displayRoutines(routines, completadasHoy = new Set()) {
   const container = document.getElementById("routines-list");
   if (!container) return;
 
@@ -119,6 +132,7 @@ function displayRoutines(routines) {
   container.innerHTML = routines
     .map((r) => {
       const style = getTypeStyle(r.nombre_tiporutina);
+      const hecha = completadasHoy.has(r.id_rutina);
       return `
       <div class="routine-row ${style.row}">
         <div class="routine-type-icon ${style.row || "red"}">
@@ -126,6 +140,7 @@ function displayRoutines(routines) {
         </div>
         <div class="routine-info">
           <div class="routine-name">${r.nombre_rutina}</div>
+          ${r.descripcion_rutina ? `<div class="routine-desc">${r.descripcion_rutina}</div>` : ""}
           <div class="routine-meta-row">
             <span class="routine-chip ${style.chip}">${r.nombre_tiporutina || "General"}</span>
             <span class="routine-freq">${r.frecuencia_rutina || "—"} · ${r.activa ? "Activa" : "Inactiva"}</span>
@@ -139,7 +154,7 @@ function displayRoutines(routines) {
             <span data-lucide="trash-2"></span>
           </div>
           <button class="btn-start" onclick="startRoutine(${r.id_rutina})">
-            <span data-lucide="play"></span> Iniciar
+            <span data-lucide="${hecha ? "repeat" : "play"}"></span> ${hecha ? "Repetir" : "Iniciar"}
           </button>
         </div>
       </div>`;
@@ -307,16 +322,13 @@ function clearActivitiesError() {
   if (err) err.hidden = true;
 }
 
-function showActivitiesError() {
+function mostrarErrorActividades(mensaje) {
   const list = document.getElementById("activities-list");
   const err = document.getElementById("activities-error");
   if (list) list.classList.add("has-error");
-  if (err) err.hidden = false;
-  const first = list?.querySelector(".activity-name-input");
-  if (first) first.focus();
-  else {
-    addActivityField();
-    list?.querySelector(".activity-name-input")?.focus();
+  if (err) {
+    err.hidden = false;
+    err.textContent = mensaje;
   }
 }
 
@@ -329,18 +341,33 @@ async function saveRoutine(event) {
   clearActivitiesError();
 
   const activityItems = document.querySelectorAll(".activity-item");
-  let actividadesValidas = 0;
+  const filas = [];
 
   activityItems.forEach((item) => {
     const nameInput = item.querySelector(".activity-name-input");
-    if (nameInput && nameInput.value.trim()) {
-      actividadesValidas++;
-    }
+    const minInput = item.querySelector(".activity-min-input");
+    const secInput = item.querySelector(".activity-sec-input");
+    const nombre = nameInput?.value.trim() || "";
+    const mins = parseInt(minInput?.value, 10) || 0;
+    const secs = parseInt(secInput?.value, 10) || 0;
+    if (!nombre && mins === 0 && secs === 0) return;
+    filas.push({ nombre, totalSeconds: mins * 60 + secs });
   });
 
-  if (actividadesValidas === 0) {
-    showActivitiesError();
+  if (filas.length === 0) {
+    mostrarErrorActividades("La rutina debe tener al menos una actividad.");
     return;
+  }
+
+  for (const fila of filas) {
+    if (!fila.nombre) {
+      mostrarErrorActividades("Cada actividad debe tener nombre.");
+      return;
+    }
+    if (fila.totalSeconds <= 0) {
+      mostrarErrorActividades("Cada actividad debe durar más de 00:00.");
+      return;
+    }
   }
 
   const routineData = {

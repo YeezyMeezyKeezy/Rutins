@@ -51,9 +51,9 @@ ipcMain.handle("auth:actualizarNombre", async (event, nombre) => {
   }
 });
 
-ipcMain.handle("auth:cambiarClave", async (event, clave) => {
+ipcMain.handle("auth:cambiarClave", async (event, claveActual, claveNueva) => {
   try {
-    return await auth.cambiarClave(clave);
+    return await auth.cambiarClave(claveActual, claveNueva);
   } catch (error) {
     return { success: false, error: error.message };
   }

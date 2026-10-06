@@ -103,10 +103,21 @@ class Auth {
     return { success: true };
   }
 
-  async cambiarClave(clave_usuario) {
-    const { error } = await supabase.auth.updateUser({
-      password: clave_usuario,
+  async cambiarClave(claveActual, claveNueva) {
+    const { data: auth, error: errorUser } = await supabase.auth.getUser();
+    if (errorUser || !auth.user?.email) {
+      return { success: false, error: "No hay sesión en Supabase" };
+    }
+
+    const { error: errorActual } = await supabase.auth.signInWithPassword({
+      email: auth.user.email,
+      password: claveActual,
     });
+    if (errorActual) {
+      return { success: false, error: "La contraseña actual no coincide" };
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: claveNueva });
     if (error) return { success: false, error: error.message };
     return { success: true };
   }

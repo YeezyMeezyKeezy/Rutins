@@ -150,7 +150,7 @@ contextBridge.exposeInMainWorld("api", {
     restaurar: async (tokens) => ipcRenderer.invoke("auth:restaurar", tokens),
     actualizarNombre: async (nombre) =>
       ipcRenderer.invoke("auth:actualizarNombre", nombre),
-    cambiarClave: async (clave) =>
-      ipcRenderer.invoke("auth:cambiarClave", clave),
+    cambiarClave: (claveActual, claveNueva) =>
+  ipcRenderer.invoke("auth:cambiarClave", claveActual, claveNueva),
   },
 });

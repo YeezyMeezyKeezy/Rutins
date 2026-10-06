@@ -210,7 +210,7 @@ function startActivityCountdown() {
       timerInterval = null;
       // Pasa automáticamente a la siguiente
       currentActivityIndex++;
-      startActivityCountdown();
+      displayCurrentActivity();
     }
   }, 1000);
 }

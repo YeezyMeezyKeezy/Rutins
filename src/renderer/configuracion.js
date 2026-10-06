@@ -82,6 +82,15 @@ async function saveProfile() {
     return;
   }
 
+  if (!/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?: [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$/.test(newName)) {
+    showMessage(
+      "profile-message",
+      "El nombre solo puede tener letras",
+      "error",
+    );
+    return;
+  }
+
   const result = await window.api.auth.actualizarNombre(newName);
 
   if (result.success) {
@@ -118,13 +127,20 @@ async function changePassword() {
     return;
   }
 
-  const result = await window.api.auth.cambiarClave(newPassword);
+  const result = await window.api.auth.cambiarClave(
+    currentPassword,
+    newPassword,
+  );
 
   if (result.success) {
     showMessage("security-message", "✓ Contraseña cambiada", "success");
     resetPasswordForm();
   } else {
-    showMessage("security-message", "Error al cambiar la contraseña", "error");
+    showMessage(
+      "security-message",
+      result.error || "Error al cambiar la contraseña",
+      "error",
+    );
   }
 }
 
