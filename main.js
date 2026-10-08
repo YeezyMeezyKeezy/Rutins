@@ -1,5 +1,7 @@
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const path = require("path");
+const fs = require("fs");
+const http = require("http");
 const isDev = require("electron-is-dev");
 
 require("dotenv").config();
@@ -22,6 +24,54 @@ probarSupabase();
 let mainWindow;
 
 // ============================================
+// PÁGINA DE RECUPERAR CONTRASEÑA (localhost:3000)
+// ============================================
+
+function servirRecuperacion() {
+  const htmlPath = path.join(__dirname, "src/views/recuperar.html");
+  const cssPath = path.join(__dirname, "src/styles/recuperar.css");
+  const iconPath = path.join(__dirname, "assets/js/lucide.min.js");
+  const iconFile = path.join(__dirname, "assets/icons/RutinsFondo.png");
+
+  const server = http.createServer((req, res) => {
+    const ruta = req.url.split("?")[0];
+
+    if (ruta === "/recuperar.css") {
+      res.writeHead(200, { "Content-Type": "text/css; charset=utf-8" });
+      res.end(fs.readFileSync(cssPath));
+      return;
+    }
+
+    if (ruta === "/lucide.min.js") {
+      res.writeHead(200, { "Content-Type": "text/javascript; charset=utf-8" });
+      res.end(fs.readFileSync(iconPath));
+      return;
+    }
+
+    if (ruta === "/RutinsFondo.png") {
+      res.writeHead(200, { "Content-Type": "image/png" });
+      res.end(fs.readFileSync(iconFile));
+      return;
+    }
+
+    if (ruta === "/recuperar") {
+      const html = fs
+        .readFileSync(htmlPath, "utf8")
+        .replace("__SUPABASE_URL__", process.env.SUPABASE_URL)
+        .replace("__SUPABASE_ANON_KEY__", process.env.SUPABASE_ANON_KEY);
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+      res.end(html);
+      return;
+    }
+
+    res.writeHead(404);
+    res.end("No encontrado");
+  });
+
+  server.listen(3000, "127.0.0.1");
+}
+
+// ============================================
 // CREAR VENTANA PRINCIPAL
 // ============================================
 
@@ -31,6 +81,7 @@ function createWindow() {
     height: 800,
     minWidth: 900,
     minHeight: 600,
+    icon: path.join(__dirname, "assets/icons/RutinsFondo.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
@@ -55,6 +106,7 @@ function createWindow() {
 // ============================================
 
 app.on("ready", () => {
+  servirRecuperacion();
   createWindow();
   createMenu();
 });

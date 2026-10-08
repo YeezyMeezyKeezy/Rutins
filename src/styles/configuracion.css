@@ -487,3 +487,11 @@ a.nav-item.active {
   height: 16px;
   stroke: currentColor;
 }
+
+.security-card .message {
+  margin: 14px 0 0;
+}
+
+.security-card .btn-primary {
+  margin-top: 4px;
+}

@@ -12,7 +12,6 @@
   </head>
   <body>
     <div class="login-layout">
-      <!-- Panel izquierdo: formulario -->
       <div class="login-center">
         <div class="login-panel">
           <div class="login-logo-area">
@@ -27,7 +26,6 @@
             <div class="login-sub">Small steps. Real progress.</div>
           </div>
 
-          <!-- Tabs -->
           <div class="form-tabs">
             <button
               type="button"
@@ -45,7 +43,6 @@
             </button>
           </div>
 
-          <!-- LOGIN -->
           <div class="form-section active" id="login-form">
             <div id="login-message" class="message"></div>
 
@@ -84,9 +81,9 @@
               </div>
 
               <div class="remember-row">
-                <label
-                  ><input type="checkbox" id="remember-me" /> Recordarme</label
-                >
+                <label>
+                  <input type="checkbox" id="remember-me" /> Recordarme
+                </label>
                 <a href="#" onclick="openForgot(event)"
                   >¿Olvidaste tu contraseña?</a
                 >
@@ -103,7 +100,6 @@
             </form>
           </div>
 
-          <!-- REGISTER -->
           <div class="form-section" id="register-form">
             <div id="register-message" class="message"></div>
 
@@ -168,7 +164,6 @@
             </form>
           </div>
 
-          <!-- RECUPERAR CONTRASEÑA -->
           <div class="form-section" id="forgot-form">
             <div id="forgot-message" class="message"></div>
 
@@ -184,40 +179,14 @@
                 />
               </div>
 
-              <div class="form-group">
-                <label class="form-label" for="forgot-password"
-                  >Nueva contraseña</label
-                >
-                <input
-                  type="password"
-                  id="forgot-password"
-                  class="form-input"
-                  placeholder="Mínimo 6 caracteres"
-                  required
-                  minlength="6"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="forgot-password-confirm"
-                  >Confirmar contraseña</label
-                >
-                <input
-                  type="password"
-                  id="forgot-password-confirm"
-                  class="form-input"
-                  placeholder="Repite la nueva contraseña"
-                  required
-                />
-              </div>
-
               <button type="submit" class="login-full-btn" id="forgot-btn">
-                Actualizar contraseña
+                Enviar enlace
               </button>
 
               <p style="text-align: center; margin-top: 12px; font-size: 12px">
                 <a
                   href="#"
+                  class="back-link"
                   onclick="
                     switchTab('login');
                     return false;
@@ -231,7 +200,6 @@
         </div>
       </div>
 
-      <!-- Panel derecho -->
       <div class="login-right-panel">
         <div>
           <div class="why-label">Why Rutins?</div>

@@ -167,13 +167,8 @@ async function handleRegister(event) {
     showMessage(
       "register",
       "La contraseña debe tener al menos 6 caracteres",
-      "error",
+      "error", 
     );
-    return;
-  }
-
-  if (!/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?: [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$/.test(nombre)) {
-    showMessage("register", "El nombre solo puede tener letras", "error");
     return;
   }
 
@@ -235,16 +230,12 @@ async function handleForgot(event) {
   try {
     const result = await window.api.auth.recuperar({ email_usuario: email });
     if (!result.success) {
-      showMessage(
-        "forgot",
-        result.error || "No se pudo enviar el correo",
-        "error",
-      );
+      showMessage("forgot", result.error || "No se pudo enviar el correo", "error");
       return;
     }
     showMessage(
       "forgot",
-      "Si el email existe, Supabase envió el enlace para cambiar la contraseña.",
+      "Si el email existe, enviamos el enlace para cambiar la contraseña.",
       "success",
     );
   } catch (error) {

@@ -106,57 +106,24 @@
             </div>
           </div>
 
-          <!-- SEGURIDAD -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <span data-lucide="lock"></span>
-                Seguridad
-              </div>
-            </div>
-            <div class="card-body">
-              <div id="security-message" class="message"></div>
-
-              <div class="form-group">
-                <label class="form-label">Contraseña actual</label>
-                <input
-                  type="password"
-                  id="current-password"
-                  class="form-input"
-                  placeholder="Tu contraseña actual"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Nueva contraseña</label>
-                <input
-                  type="password"
-                  id="new-password"
-                  class="form-input"
-                  placeholder="Mínimo 6 caracteres"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Confirmar contraseña</label>
-                <input
-                  type="password"
-                  id="confirm-password"
-                  class="form-input"
-                  placeholder="Repite la nueva contraseña"
-                />
-              </div>
-
-              <div class="form-actions">
-                <button class="btn btn-secondary" onclick="resetPasswordForm()">
-                  Cancelar
-                </button>
-                <button class="btn btn-primary" onclick="changePassword()">
-                  Cambiar contraseña
-                </button>
-              </div>
-            </div>
-          </div>
+          <section class="card security-card">
+  <div class="card-header">
+    <h2 class="card-title">
+      <span data-lucide="lock"></span>
+      Seguridad
+    </h2>
+  </div>
+  <div class="card-body">
+    <p class="about-text">
+      Te enviamos un enlace a tu correo para cambiar la contraseña. La clave no
+      se modifica desde aquí.
+    </p>
+    <button type="button" class="btn btn-primary" onclick="requestPasswordEmail()">
+      Enviar enlace al correo
+    </button>
+    <p id="security-message" class="message"></p>
+  </div>
+</section>
 
           <!-- DATOS -->
           <div class="card">
@@ -202,7 +169,7 @@
               </p>
               <div class="about-meta">
                 <div>
-                  <span class="meta-label">Versión</span><span>1.0.0</span>
+                  <span class="meta-label">Versión</span><span>1.1.0</span>
                 </div>
               </div>
             </div>

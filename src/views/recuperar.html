@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rutins — Nueva contraseña</title>
+    <link rel="icon" href="/RutinsFondo.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/recuperar.css" />
+  </head>
+  <body>
+    <main class="card" id="card">
+      <p class="brand">Rutins</p>
+      <h1 id="title">Nueva contraseña</h1>
+      <p class="copy" id="copy">Escribe la nueva contraseña de tu cuenta.</p>
+
+      <form id="form">
+        <label class="field">
+          Nueva contraseña
+          <span class="wrap">
+            <input id="pass" type="password" minlength="6" required />
+            <button
+              type="button"
+              class="eye"
+              id="eye"
+              aria-label="Mostrar contraseña"
+            >
+              <span data-lucide="eye" class="icon-show"></span>
+              <span data-lucide="eye-off" class="icon-hide"></span>
+            </button>
+          </span>
+        </label>
+        <label class="field">
+          Confirmar contraseña
+          <input id="pass2" type="password" minlength="6" required />
+        </label>
+        <p class="msg" id="msg"></p>
+        <button type="submit" class="primary">Guardar contraseña</button>
+      </form>
+
+      <section class="state" id="expired" hidden>
+        <p>Este enlace ya venció o la sesión no es válida.</p>
+        <p class="hint">
+          Pide otro desde la app de Rutins.
+        </p>
+      </section>
+
+      <section class="state" id="done" hidden>
+        <p>Ya cambiaste la contraseña.</p>
+        <p class="hint">Vuelve a Rutins e inicia sesión con la nueva clave.</p>
+      </section>
+    </main>
+
+    <script src="/lucide.min.js"></script>
+    <script type="module">
+      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+      const params = new URLSearchParams(location.hash.slice(1));
+      const code = new URLSearchParams(location.search).get("code");
+      const form = document.getElementById("form");
+      const msg = document.getElementById("msg");
+      const expired = document.getElementById("expired");
+      const done = document.getElementById("done");
+      const title = document.getElementById("title");
+      const copy = document.getElementById("copy");
+      const eye = document.getElementById("eye");
+      const pass = document.getElementById("pass");
+      const pass2 = document.getElementById("pass2");
+
+      const supabase = createClient(
+        "__SUPABASE_URL__",
+        "__SUPABASE_ANON_KEY__",
+        {
+          auth: { persistSession: true, detectSessionInUrl: true },
+        },
+      );
+
+      if (window.lucide) lucide.createIcons();
+
+      function mostrarVencido() {
+        form.hidden = true;
+        expired.hidden = false;
+        title.textContent = "Enlace vencido";
+        copy.textContent = "No se pudo abrir la recuperación.";
+      }
+
+      function mostrarListo() {
+        form.hidden = true;
+        done.hidden = false;
+        title.textContent = "Listo";
+        copy.textContent = "La contraseña de tu cuenta quedó actualizada.";
+      }
+
+      let lista = false;
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        lista = !error;
+        if (error) mostrarVencido();
+      } else if (params.get("access_token") && params.get("refresh_token")) {
+        const { error } = await supabase.auth.setSession({
+          access_token: params.get("access_token"),
+          refresh_token: params.get("refresh_token"),
+        });
+        lista = !error;
+        if (error) mostrarVencido();
+      } else {
+        mostrarVencido();
+      }
+
+      eye.addEventListener("click", () => {
+        const visible = pass.type === "text";
+        pass.type = visible ? "password" : "text";
+        pass2.type = visible ? "password" : "text";
+        eye.classList.toggle("on", !visible);
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!lista) return;
+        if (pass.value !== pass2.value) {
+          msg.textContent = "Las contraseñas no coinciden";
+          return;
+        }
+        const { error } = await supabase.auth.updateUser({
+          password: pass.value,
+        });
+        if (error) {
+          msg.textContent = error.message;
+          return;
+        }
+        mostrarListo();
+      });
+    </script>
+  </body>
+</html>

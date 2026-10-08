@@ -398,6 +398,16 @@ body {
   stroke: currentColor;
 }
 
+.back-link {
+  color: #8b2131;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #a02640;
+}
+
 /* ocultar panel derecho en pantallas pequeñas */
 @media (max-width: 900px) {
   .login-right-panel {

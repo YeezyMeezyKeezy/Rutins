@@ -82,15 +82,6 @@ async function saveProfile() {
     return;
   }
 
-  if (!/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?: [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$/.test(newName)) {
-    showMessage(
-      "profile-message",
-      "El nombre solo puede tener letras",
-      "error",
-    );
-    return;
-  }
-
   const result = await window.api.auth.actualizarNombre(newName);
 
   if (result.success) {
@@ -109,39 +100,32 @@ function resetPasswordForm() {
   document.getElementById("confirm-password").value = "";
 }
 
-async function changePassword() {
-  const currentPassword = document.getElementById("current-password").value;
-  const newPassword = document.getElementById("new-password").value;
-  const confirmPassword = document.getElementById("confirm-password").value;
-
-  if (!currentPassword || !newPassword || !confirmPassword) {
-    showMessage("security-message", "Completa todos los campos", "error");
-    return;
-  }
-  if (newPassword !== confirmPassword) {
-    showMessage("security-message", "Las contraseñas no coinciden", "error");
-    return;
-  }
-  if (newPassword.length < 6) {
-    showMessage("security-message", "Mínimo 6 caracteres", "error");
+async function requestPasswordEmail() {
+  const raw =
+    localStorage.getItem("currentUser") ||
+    sessionStorage.getItem("currentUser");
+  const user = raw ? JSON.parse(raw) : null;
+  const email = user?.email_usuario;
+  if (!email) {
+    showMessage("security-message", "No hay un correo en la sesión", "error");
     return;
   }
 
-  const result = await window.api.auth.cambiarClave(
-    currentPassword,
-    newPassword,
+  const result = await window.api.auth.recuperar({ email_usuario: email });
+  if (!result.success) {
+    let texto = result.error || "No se pudo enviar el correo";
+    if (texto.toLowerCase().includes("security purposes")) {
+      const segundos = texto.match(/\d+/)?.[0] || "60";
+      texto = `Espera ${segundos} segundos para pedir otro enlace.`;
+    }
+    showMessage("security-message", texto, "error");
+    return;
+  }
+  showMessage(
+    "security-message",
+    "Te enviamos un enlace para cambiar la contraseña.",
+    "success",
   );
-
-  if (result.success) {
-    showMessage("security-message", "✓ Contraseña cambiada", "success");
-    resetPasswordForm();
-  } else {
-    showMessage(
-      "security-message",
-      result.error || "Error al cambiar la contraseña",
-      "error",
-    );
-  }
 }
 
 async function exportAccount() {

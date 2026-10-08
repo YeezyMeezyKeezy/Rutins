@@ -2,11 +2,21 @@ const { supabase } = require("../database/supabase");
 
 class Auth {
   async registrar({ nombre_usuario, email_usuario, clave_usuario }) {
+    const nombre = (nombre_usuario || "").trim();
+    if (!nombre) return { success: false, error: "El nombre no puede estar vacío" };
+
+    const { data: libre, error: errorNombre } = await supabase.rpc(
+      "nombre_disponible",
+      { nombre },
+    );
+    if (errorNombre) return { success: false, error: errorNombre.message };
+    if (!libre) return { success: false, error: "Ese nombre ya está en uso" };
+
     const { data, error } = await supabase.auth.signUp({
       email: email_usuario,
       password: clave_usuario,
       options: {
-        data: { nombre_usuario },
+        data: { nombre_usuario: nombre },
       },
     });
 
@@ -30,7 +40,7 @@ class Auth {
       success: true,
       data: {
         id_usuario: user.id,
-        nombre_usuario,
+        nombre_usuario: nombre,
         email_usuario: user.email,
         access_token: data.session.access_token,
         refresh_token: data.session.refresh_token,
@@ -49,8 +59,7 @@ class Auth {
     }
 
     const user = data.user;
-    const nombre =
-      user.user_metadata?.nombre_usuario || user.email.split("@")[0];
+    const nombre = user.user_metadata?.nombre_usuario || user.email.split("@")[0];
 
     return {
       success: true,
@@ -70,10 +79,12 @@ class Auth {
   }
 
   async recuperar({ email_usuario }) {
-    const { error } = await supabase.auth.resetPasswordForEmail(email_usuario);
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  }
+  const { error } = await supabase.auth.resetPasswordForEmail(email_usuario, {
+    redirectTo: "http://localhost:3000/recuperar",
+  });
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
 
   async restaurar(access_token, refresh_token) {
     if (!access_token || !refresh_token) {
@@ -93,13 +104,26 @@ class Auth {
       return { success: false, error: "No hay sesión en Supabase" };
     }
 
+    const nombre = (nombre_usuario || "").trim();
+    if (!nombre) return { success: false, error: "El nombre no puede estar vacío" };
+
+    const actual = auth.user.user_metadata?.nombre_usuario || "";
+    if (nombre.toLowerCase() !== actual.toLowerCase()) {
+      const { data: libre, error: errorNombre } = await supabase.rpc(
+        "nombre_disponible",
+        { nombre },
+      );
+      if (errorNombre) return { success: false, error: errorNombre.message };
+      if (!libre) return { success: false, error: "Ese nombre ya está en uso" };
+    }
+
     const { error: errorPerfil } = await supabase
       .from("perfil")
-      .update({ nombre_usuario })
+      .update({ nombre_usuario: nombre })
       .eq("id_usuario", auth.user.id);
     if (errorPerfil) return { success: false, error: errorPerfil.message };
 
-    await supabase.auth.updateUser({ data: { nombre_usuario } });
+    await supabase.auth.updateUser({ data: { nombre_usuario: nombre } });
     return { success: true };
   }
 
