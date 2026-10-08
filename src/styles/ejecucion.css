@@ -43,10 +43,13 @@ body {
 
 .sidebar {
   width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
   background: var(--dark);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  height: 100vh;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .sidebar-brand {
@@ -87,35 +90,54 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 18px;
+  margin: 2px 10px;
+  padding: 9px 12px;
+  border-radius: 9px;
   font-size: 12.5px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.55);
   cursor: pointer;
-  border-left: 3px solid transparent;
-  transition: 0.15s;
+  border-left: 0;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.nav-item:active {
+  transform: scale(0.98);
 }
 
 .nav-icon {
   width: 20px;
-  text-align: center;
+  min-width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
 }
 
 .sidebar-footer {
   margin-top: auto;
-  padding: 14px 18px;
+  padding: 14px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .session-hint {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.35);
-  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.45;
 }
 
 /* Main */
@@ -155,16 +177,20 @@ body {
 }
 
 .content {
-  padding: 24px;
+  padding: 28px 24px;
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  justify-content: center;
 }
 
 .exec-layout {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 16px;
-  max-width: 1000px;
+  grid-template-columns: minmax(0, 1.4fr) 320px;
+  gap: 20px;
+  width: 100%;
+  max-width: 1040px;
+  align-items: start;
 }
 
 /* Timer */
@@ -179,10 +205,11 @@ body {
 
 .timer-display {
   font-family: "JetBrains Mono", monospace;
-  font-size: 52px;
+  font-size: 72px;
   font-weight: 700;
   color: white;
   letter-spacing: 2px;
+  line-height: 1;
 }
 
 .timer-label {
@@ -555,6 +582,10 @@ body {
 @media (max-width: 800px) {
   .exec-layout {
     grid-template-columns: 1fr;
+  }
+
+  .timer-display {
+    font-size: 52px;
   }
 
   .sidebar {

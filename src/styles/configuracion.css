@@ -262,10 +262,12 @@ a.nav-item.active {
 }
 
 .content {
-  padding: 24px;
+  padding: 28px 24px 32px;
   flex: 1;
   overflow-y: auto;
-  max-width: 640px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
 }
 
 /* Cards */

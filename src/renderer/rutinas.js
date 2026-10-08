@@ -62,13 +62,20 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 async function loadRoutines(userId) {
   try {
-    const result = await window.api.rutina.obtenerTodas(userId);
     const hoy = fechaLocal();
-    const ejecuciones = await window.api.ejecucion.obtenerPorFecha(userId, hoy);
+    const [result, ejecuciones] = await Promise.all([
+      window.api.rutina.obtenerTodas(userId),
+      window.api.ejecucion.obtenerUltimas(userId, 7),
+    ]);
+
     const completadasHoy = new Set(
       (ejecuciones.success && ejecuciones.data ? ejecuciones.data : [])
-        .filter((e) => e.completada_ejecucion === 1)
-        .map((e) => e.id_rutina),
+        .filter(
+          (e) =>
+            (e.completada_ejecucion === 1 || e.completada_ejecucion === true) &&
+            fechaDe(e.fecha_ejecucion) === hoy,
+        )
+        .map((e) => Number(e.id_rutina)),
     );
 
     if (result.success && result.data && result.data.length > 0) {
@@ -84,6 +91,13 @@ async function loadRoutines(userId) {
   } catch (error) {
     console.error("Error cargando rutinas:", error);
   }
+}
+
+function fechaDe(iso) {
+  const d = new Date(iso);
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const dia = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mes}-${dia}`;
 }
 
 function fechaLocal() {
@@ -132,7 +146,7 @@ function displayRoutines(routines, completadasHoy = new Set()) {
   container.innerHTML = routines
     .map((r) => {
       const style = getTypeStyle(r.nombre_tiporutina);
-      const hecha = completadasHoy.has(r.id_rutina);
+      const hecha = completadasHoy.has(Number(r.id_rutina));
       return `
       <div class="routine-row ${style.row}">
         <div class="routine-type-icon ${style.row || "red"}">

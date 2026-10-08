@@ -24,7 +24,8 @@
         </div>
         <div class="sidebar-section">Sesión activa</div>
         <div class="nav-item" onclick="goBack()">
-          <span class="nav-icon">←</span> Volver
+          <span class="nav-icon" data-lucide="arrow-left"></span>
+          Volver
         </div>
         <div class="sidebar-footer">
           <div class="session-hint">
@@ -35,9 +36,9 @@
 
       <div class="main">
         <div class="topbar">
-          <div class="topbar-title" id="routine-name">Mi Rutina</div>
+          <div class="topbar-title" id="routine-name"></div>
           <div class="topbar-spacer"></div>
-          <span class="topbar-badge" id="routine-type">Tipo</span>
+          <span class="topbar-badge" id="routine-type"></span>
         </div>
 
         <div class="content">
@@ -51,18 +52,12 @@
 
               <div class="activity-card" id="current-activity">
                 <div class="activity-header">
-                  <div class="activity-number" id="activity-number">1</div>
+                  <div class="activity-number" id="activity-number"></div>
                   <div class="activity-title-group">
-                    <div class="activity-name" id="activity-name">
-                      Actividad
-                    </div>
-                    <div class="activity-duration" id="activity-duration">
-                      5 minutos
-                    </div>
+                    <div class="activity-name" id="activity-name"></div>
+                    <div class="activity-duration" id="activity-duration"></div>
                   </div>
-                  <div class="activity-status" id="activity-status">
-                    En progreso
-                  </div>
+                  <div class="activity-status" id="activity-status"></div>
                 </div>
               </div>
 
@@ -151,6 +146,10 @@
       </div>
     </div>
 
+    <script src="../../assets/js/lucide.min.js"></script>
     <script src="../renderer/ejecucion.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
   </body>
 </html>

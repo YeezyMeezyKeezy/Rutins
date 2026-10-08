@@ -92,10 +92,6 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, "src/views/login.html"));
 
-  if (isDev) {
-    mainWindow.webContents.openDevTools();
-  }
-
   mainWindow.on("closed", () => {
     mainWindow = null;
   });

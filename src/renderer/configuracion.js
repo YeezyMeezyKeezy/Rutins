@@ -132,16 +132,16 @@ async function exportAccount() {
   const result = await window.api.cuenta.exportar(currentUser.id_usuario);
   if (result.canceled) return;
   if (result.success) {
-    showMessage("data-message", "Cuenta exportada correctamente.", "success");
+    showMessage("data-message", "Rutinas exportadas correctamente.", "success");
   } else {
-    showMessage("data-message", result.error || "No se pudo exportar", "error");
+    showMessage("data-message", result.error || "No se pudieron exportar las rutinas", "error");
   }
 }
 
 async function importAccount() {
   if (
     !confirm(
-      "Si el email del archivo ya existe en este PC, se borrarán sus rutinas y progreso actuales y se reemplazarán por los del archivo.\n\n¿Quieres importar la cuenta?",
+      "Se agregarán las rutinas del archivo a tu cuenta actual.\n\nNo se cambia el correo ni la contraseña.\n\n¿Importar rutinas?",
     )
   ) {
     return;
@@ -151,18 +151,10 @@ async function importAccount() {
   if (result.canceled) return;
 
   if (result.success) {
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify({
-        id_usuario: result.id_usuario,
-        nombre_usuario: result.nombre_usuario,
-        email_usuario: result.email_usuario,
-      }),
-    );
-    showMessage("data-message", "Cuenta importada correctamente.", "success");
+    showMessage("data-message", "Rutinas importadas correctamente.", "success");
     window.location.reload();
   } else {
-    showMessage("data-message", result.error || "No se pudo importar", "error");
+    showMessage("data-message", result.error || "No se pudieron importar las rutinas", "error");
   }
 }
 

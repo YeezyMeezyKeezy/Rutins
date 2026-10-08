@@ -36,7 +36,6 @@ window.addEventListener("DOMContentLoaded", async () => {
         : "");
   }
 
-  await updateRoutinesBadge(user.id_usuario);
   await loadProgressData(user.id_usuario);
   if (window.lucide) lucide.createIcons();
 });
@@ -67,15 +66,26 @@ async function updateRoutinesBadge(userId) {
 
 async function loadProgressData(userId) {
   try {
-    const progressResult = await window.api.progreso.obtener(userId);
+    const [progressResult, executionsResult, rutinasResult] = await Promise.all([
+      window.api.progreso.obtener(userId),
+      window.api.ejecucion.obtenerUltimas(userId, 30),
+      window.api.rutina.obtenerTodas(userId),
+    ]);
+
+    const badge = document.getElementById("routines-badge");
+    const count =
+      rutinasResult.success && rutinasResult.data
+        ? rutinasResult.data.length
+        : 0;
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? "inline" : "none";
+    }
+
     if (progressResult.success && progressResult.data) {
       displayProgressCards(progressResult.data);
     }
 
-    const executionsResult = await window.api.ejecucion.obtenerUltimas(
-      userId,
-      30,
-    );
     if (executionsResult.success && executionsResult.data) {
       displayExecutions(executionsResult.data);
       displayWeekChart(executionsResult.data);

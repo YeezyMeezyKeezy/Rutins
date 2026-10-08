@@ -66,6 +66,20 @@ function fechaLocal() {
   return `${d.getFullYear()}-${mes}-${dia}`;
 }
 
+function fechaDe(iso) {
+  const d = new Date(iso);
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const dia = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mes}-${dia}`;
+}
+
+function estaHecha(ejecucion) {
+  return (
+    ejecucion.completada_ejecucion === 1 ||
+    ejecucion.completada_ejecucion === true
+  );
+}
+
 function rutinasParaHoy(routines, ejecuciones) {
   const inicio = new Date();
   const dia = inicio.getDay();
@@ -78,47 +92,38 @@ function rutinasParaHoy(routines, ejecuciones) {
     "2 veces/semana": 2,
     "1 vez/semana": 1,
   };
-  const conteo = {};
+  const diasPorRutina = {};
 
   for (const e of ejecuciones || []) {
-    if (e.completada_ejecucion !== 1) continue;
+    if (!estaHecha(e)) continue;
     if (new Date(e.fecha_ejecucion) < inicio) continue;
-    conteo[e.id_rutina] = (conteo[e.id_rutina] || 0) + 1;
+    const id = Number(e.id_rutina);
+    if (!diasPorRutina[id]) diasPorRutina[id] = new Set();
+    diasPorRutina[id].add(fechaDe(e.fecha_ejecucion));
   }
 
   return (routines || []).filter((r) => {
     if (!(r.activa === 1 || r.activa === true)) return false;
+    const dias = diasPorRutina[Number(r.id_rutina)];
+    const hechaHoy = dias?.has(fechaLocal()) || false;
+    if (hechaHoy) return true;
     if (r.frecuencia_rutina === "Diaria") return true;
-    const limite = cupo[r.frecuencia_rutina] ?? 7;
-    return (conteo[r.id_rutina] || 0) < limite;
+    const hechas = dias?.size || 0;
+    return hechas < (cupo[r.frecuencia_rutina] ?? 7);
   });
 }
 
 async function loadDashboardData(user) {
   try {
-    const rutinasResult = await window.api.rutina.obtenerTodas(user.id_usuario);
-
     const today = fechaLocal();
-    let executionsToday = [];
-    let executionsWeek = [];
-    try {
-      const execResult = await window.api.ejecucion.obtenerPorFecha(
-        user.id_usuario,
-        today,
-      );
-      if (execResult.success && execResult.data) {
-        executionsToday = execResult.data;
-      }
-      const weekResult = await window.api.ejecucion.obtenerUltimas(
-        user.id_usuario,
-        7,
-      );
-      if (weekResult.success && weekResult.data) {
-        executionsWeek = weekResult.data;
-      }
-    } catch (e) {
-      console.warn("No se pudieron cargar ejecuciones:", e);
-    }
+    const [rutinasResult, weekResult, progresoResult] = await Promise.all([
+      window.api.rutina.obtenerTodas(user.id_usuario),
+      window.api.ejecucion.obtenerUltimas(user.id_usuario, 7),
+      window.api.progreso.obtener(user.id_usuario),
+    ]);
+
+    const executionsWeek =
+      weekResult.success && weekResult.data ? weekResult.data : [];
 
     if (rutinasResult.success && rutinasResult.data) {
       const routines = rutinasResult.data;
@@ -134,11 +139,13 @@ async function loadDashboardData(user) {
       }
 
       const completedIds = new Set(
-        (executionsToday || [])
-          .filter((e) => e.completada_ejecucion === 1)
-          .map((e) => e.id_rutina),
+        executionsWeek
+          .filter((e) => estaHecha(e) && fechaDe(e.fecha_ejecucion) === today)
+          .map((e) => Number(e.id_rutina)),
       );
-      const pending = deHoy.filter((r) => !completedIds.has(r.id_rutina)).length;
+      const pending = deHoy.filter(
+        (r) => !completedIds.has(Number(r.id_rutina)),
+      ).length;
       const done = Math.max(0, deHoy.length - pending);
 
       const statToday = document.getElementById("stat-today");
@@ -158,10 +165,9 @@ async function loadDashboardData(user) {
         }
       }
 
-      renderRoutineRows("dashboard-routines", deHoy, executionsToday);
+      renderRoutineRows("dashboard-routines", deHoy, completedIds);
     }
 
-    const progresoResult = await window.api.progreso.obtener(user.id_usuario);
     if (progresoResult.success && progresoResult.data) {
       const p = progresoResult.data;
       const setText = (id, value) => {
@@ -199,15 +205,9 @@ function getTypeStyle(nombreTipo) {
   return { icon: "clipboard-list", chip: "", row: "", fill: "" };
 }
 
-function renderRoutineRows(containerId, routines, executionsToday = []) {
+function renderRoutineRows(containerId, routines, completedIds = new Set()) {
   const container = document.getElementById(containerId);
   if (!container) return;
-
-  const completedIds = new Set(
-    (executionsToday || [])
-      .filter((e) => e.completada_ejecucion === 1)
-      .map((e) => e.id_rutina),
-  );
 
   if (!routines || routines.length === 0) {
     container.innerHTML = `
@@ -226,7 +226,7 @@ function renderRoutineRows(containerId, routines, executionsToday = []) {
   container.innerHTML = routines
     .map((r) => {
       const style = getTypeStyle(r.nombre_tiporutina);
-      const isDone = completedIds.has(r.id_rutina);
+      const isDone = completedIds.has(Number(r.id_rutina));
       const statusClass = isDone ? "done" : "pending";
       const statusText = isDone ? "Completada" : "Pendiente";
 

@@ -50,7 +50,10 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 async function loadRoutine(id) {
   try {
-    const routineResult = await window.api.rutina.obtener(id);
+    const [routineResult, activitiesResult] = await Promise.all([
+      window.api.rutina.obtener(id),
+      window.api.actividad.obtenerPorRutina(id),
+    ]);
 
     if (!routineResult.success || !routineResult.data) {
       alert("No se encontró la rutina");
@@ -59,8 +62,6 @@ async function loadRoutine(id) {
     }
 
     routine = routineResult.data;
-
-    const activitiesResult = await window.api.actividad.obtenerPorRutina(id);
     activities =
       activitiesResult.success && activitiesResult.data
         ? activitiesResult.data.sort(
@@ -340,4 +341,8 @@ async function finishRoutine() {
     console.error("Error al guardar rutina:", error);
     alert("Error al guardar la rutina");
   }
+}
+
+function goBack() {
+  window.location.href = "dashboard.html";
 }
