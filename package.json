@@ -1,6 +1,6 @@
 {
   "name": "Rutins",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Aplicación para organización y seguimiento de hábitos y rutinas diarias",
   "main": "main.js",
   "homepage": "./",
@@ -43,7 +43,7 @@
           ]
         }
       ],
-      "icon": "assets/icon.png"
+      "icon": "assets/icons/Rutins.png"
     },
     "nsis": {
       "oneClick": false,
@@ -55,13 +55,13 @@
       "target": [
         "dmg"
       ],
-      "icon": "assets/icon.png"
+      "icon": "assets/icons/Rutins.png"
     },
     "linux": {
       "target": [
         "AppImage"
       ],
-      "icon": "assets/icon.png"
+      "icon": "assets/icons/Rutins.png"
     }
   },
   "author": "Angelo Cruz",
